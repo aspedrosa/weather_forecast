@@ -1,7 +1,7 @@
 package aspedrosa.weatherforecast.services;
 
 import aspedrosa.weatherforecast.domain.SearchResult;
-import org.junit.After;
+import aspedrosa.weatherforecast.repositories.SearchCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,9 +34,14 @@ public class SearchServiceTest {
     @MockBean
     LocationIqAPIService search_api_service;
 
+    @MockBean
+    SearchCache search_cache;
+
+    List<SearchResult> ilhavo;
+
     @Before
-    public void setUp() {
-        List<SearchResult> ilhavo = new ArrayList<>();
+    public  void setUp() {
+        ilhavo = new ArrayList<>();
         ilhavo.add(new SearchResult("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal",
                                     40.60552025,
                                     -8.68594848811954));
@@ -45,11 +50,14 @@ public class SearchServiceTest {
 
         Mockito.when(search_api_service.search("ilhavo")).thenReturn(ilhavo);
         Mockito.when(search_api_service.search("asdfsdfh")).thenReturn(empty);
+
+        Mockito.when(search_cache.get_cached_data("ilhavo")).thenReturn(null).thenReturn(ilhavo);
+        Mockito.when(search_cache.get_cached_data("asdfsdfh")).thenReturn(null).thenReturn(null);
     }
 
     @Test
     public void search_no_result() {
-        List<SearchResult> response = search_api_service.search("asdfsdfh");
+        List<SearchResult> response = search_service.search("asdfsdfh");
 
         assertTrue(response.isEmpty());
     }
@@ -66,5 +74,10 @@ public class SearchServiceTest {
         assertEquals(response.get(0).get_display_name(), "Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal");
         assertEquals(response.get(0).get_latitude(), 40.60552025, 0);
         assertEquals(response.get(0).get_longitude(), -8.68594848811954, 0);
+
+        search_service.search("ilhavo");
+
+        Mockito.verify(search_cache, Mockito.times(2)).get_cached_data("ilhavo");
+        Mockito.verify(search_cache, Mockito.times(1)).cache_data("ilhavo", ilhavo);
     }
 }

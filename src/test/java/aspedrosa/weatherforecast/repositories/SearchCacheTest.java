@@ -3,7 +3,6 @@ package aspedrosa.weatherforecast.repositories;
 import aspedrosa.weatherforecast.domain.SearchResult;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
