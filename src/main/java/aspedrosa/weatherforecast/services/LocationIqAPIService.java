@@ -4,8 +4,10 @@ import aspedrosa.weatherforecast.domain.SearchResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -18,6 +20,9 @@ import java.util.Map;
  */
 @Service
 public class LocationIqAPIService extends SearchAPIService {
+
+    @Autowired
+    RestTemplate rest_template;
 
     /**
      * @see APIService
@@ -38,28 +43,21 @@ public class LocationIqAPIService extends SearchAPIService {
      */
     @Override
     public List<SearchResult> search(String user_location_input) {
-        //REST call
-        RestTemplate template = new RestTemplate();
-        ResponseEntity<String> response_entity = template.getForEntity(build_api_url(
-            new Object[] {user_location_input}),
-            String.class);
-
         //Initialize data
         List<SearchResult> data = new ArrayList<>();
 
-        //Convert data into json object
-        JSONArray response;
+        ResponseEntity<String> response_entity;
+        //REST call
         try {
-            response = new JSONArray(response_entity.getBody());
-        }
-        catch (JSONException e) {
-            /**
-             * If a json exception occurred it is assumed that can't convert
-             *  to a json array because received a json object (api error message)
-             * Return an empty list on that case
-             */
+            response_entity = rest_template.getForEntity(build_api_url(
+                new Object[] {user_location_input}),
+                String.class);
+        } catch (HttpClientErrorException e) {
             return data;
         }
+
+        //Convert data into json object
+        JSONArray response = new JSONArray(response_entity.getBody());
 
         //Keep track of number of times I have seen the same display_name
         Map<String, Integer> location_count = new HashMap<>();
