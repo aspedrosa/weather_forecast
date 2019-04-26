@@ -1,0 +1,58 @@
+package aspedrosa.weatherforecast.controllers;
+
+import aspedrosa.weatherforecast.services.ForecastService;
+import aspedrosa.weatherforecast.services.SearchService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * Where the endpoints of this application are located
+ */
+@RestController
+@RequestMapping ("/api")
+public class WeatherController {
+
+    /**
+     * Service to request forecast results
+     */
+    @Autowired
+    ForecastService forecast_service;
+
+    /**
+     * Service to request search results related to locations
+     */
+    @Autowired
+    SearchService search_service;
+
+    /**
+     * Gives the weather results for certain coordinates within a time (daily) interval
+     *
+     * @param longitude of the location
+     * @param latitude of the location
+     * @param days_number data of how much days
+     * @param days_offset how many days after today to ignore forecast
+     * @return HTTP response with forecast results on the data field
+     */
+    @GetMapping
+    public ResponseEntity forecast(@RequestParam double longitude,
+                                   @RequestParam double latitude,
+                                   @RequestParam (required = false) Integer days_number,
+                                   @RequestParam (required = false) Integer days_offset) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
+    /**
+     * Used to has a search and conversion mechanism from a location to global coordinates
+     *
+     * @param location input from the user of a location to search for
+     * @return HTTP response with search results on the data field
+     */
+    @GetMapping
+    public ResponseEntity search(@RequestParam String location) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+}

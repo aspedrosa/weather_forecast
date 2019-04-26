@@ -1,2 +1,3 @@
-# wheather_forecast
-Using Test Driven Development to devolop a full stack app
+# Weather Forecast
+
+Homework for the course unit SQT (Software Quality and Tests) of the BSc Informatics Engineering
