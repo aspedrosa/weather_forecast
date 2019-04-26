@@ -1,6 +1,8 @@
 package aspedrosa.weatherforecast.services;
 
 import aspedrosa.weatherforecast.domain.SearchResult;
+import aspedrosa.weatherforecast.repositories.SearchCache;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ public class SearchService {
     @Autowired
     LocationIqAPIService search_api_service;
 
+    @Autowired
+    SearchCache search_cache;
+
     /**
      * Searches for locations on an external api that match the input received from the user
      *
@@ -25,6 +30,14 @@ public class SearchService {
      * @return list of all search results that match the input of the user
      */
     public List<SearchResult> search(String user_input_location) {
-        return null;
+        List<SearchResult> data;
+        if ((data = search_cache.get_cached_data(user_input_location)) != null)
+            return data;
+
+        data = search_api_service.search(user_input_location);
+
+        search_cache.cache_data(user_input_location, data);
+
+        return data;
     }
 }

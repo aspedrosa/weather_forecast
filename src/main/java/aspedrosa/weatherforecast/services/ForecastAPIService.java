@@ -5,7 +5,7 @@ import aspedrosa.weatherforecast.domain.ForecastResult;
 /**
  * Base structure for a api service used to get forecast data
  */
-public interface ForecastAPIService extends APIService {
+public abstract class ForecastAPIService extends APIService {
     /**
      * Makes a call to an external api to get forecast data
      *
@@ -16,5 +16,5 @@ public interface ForecastAPIService extends APIService {
      *
      * @return forecast results
      */
-    ForecastResult forecast(double latitude, double longitude, int days_count, int days_offset);
+    abstract ForecastResult forecast(double latitude, double longitude, int days_count, int days_offset);
 }

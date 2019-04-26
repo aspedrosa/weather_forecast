@@ -5,12 +5,13 @@ package aspedrosa.weatherforecast.services;
  * With this if another api only new class, that follows the same structure
  *  needs to be implements, leaving the higher level services untouched.
  */
-public interface APIService {
+public abstract class APIService {
+
     /**
-     * Gets the api key/token for this api
-     * All apis use some kind of key or token
+     * Gets the urls to query the external api
      *
-     * @return the api key/token
+     * @param args to build the url
+     * @return the formatted url
      */
-    String get_api_key();
+    abstract String build_api_url(Object[] args);
 }
