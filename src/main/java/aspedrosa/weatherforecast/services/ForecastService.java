@@ -47,7 +47,7 @@ public class ForecastService {
      *
      * @return forecast results
      */
-    public DailyForecast forecast(double latitude, double longitude, int days_count) {
+    public DailyForecast[] forecast(double latitude, double longitude, int days_count) {
         return null;
     }
 }

@@ -6,7 +6,6 @@ import aspedrosa.weatherforecast.repositories.SearchCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,13 +31,13 @@ public class SearchService {
      */
     public List<SearchResult> search(String user_input_location) {
         List<SearchResult> data = search_cache.get_cached_data(user_input_location);
-        if (!data.isEmpty())
+        if (data != null)
             return data;
 
         data = search_api_service.search(user_input_location);
 
         if (data.isEmpty())
-            return Collections.emptyList();
+            return data;
 
         search_cache.cache_data(user_input_location, data);
 

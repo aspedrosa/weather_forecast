@@ -11,6 +11,10 @@ import java.util.List;
 @Repository
 public class SearchCache extends Cache<String, List<SearchResult>> {
 
+    public SearchCache() {
+        super();
+    }
+
     /**
      * Expires after one month
      *

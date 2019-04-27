@@ -19,7 +19,7 @@ public class Coordinates {
     private double longitude;
 
     /**
-     * Main location
+     * Main constructor
      *
      * @param latitude of the location
      * @param longitude of the location

@@ -44,7 +44,7 @@ public class SearchServiceTest {
     @Test
     public void search_no_result() {
         Mockito.when(search_api_service.search("asdfsdfh")).thenReturn(Collections.emptyList());
-        Mockito.when(search_cache.get_cached_data("asdfsdfh")).thenReturn(Collections.emptyList()).thenReturn(Collections.emptyList());
+        Mockito.when(search_cache.get_cached_data("asdfsdfh")).thenReturn(null).thenReturn(null);
 
         List<SearchResult> response = search_service.search("asdfsdfh");
 
@@ -65,9 +65,8 @@ public class SearchServiceTest {
         ilhavo.add(new SearchResult("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal",
             40.60552025,
             -8.68594848811954));
-
         Mockito.when(search_api_service.search("ilhavo")).thenReturn(ilhavo);
-        Mockito.when(search_cache.get_cached_data("ilhavo")).thenReturn(Collections.emptyList()).thenReturn(ilhavo);
+        Mockito.when(search_cache.get_cached_data("ilhavo")).thenReturn(null).thenReturn(ilhavo);
 
         List<SearchResult> response = search_service.search("ilhavo");
 

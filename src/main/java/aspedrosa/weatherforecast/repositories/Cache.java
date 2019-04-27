@@ -34,7 +34,7 @@ public abstract class Cache<K,V> {
      * Class to use as value for the internal map to store cache data.
      * Stores the expiration time for this value and the value itself.
      */
-    protected class Value {
+    protected final class Value {
         /**
          * Unix timestamp when this value was written
          */
@@ -108,7 +108,7 @@ public abstract class Cache<K,V> {
      * Used to when a match for the request is not found on cache
      * Number of requests and misses are incremented
      */
-    private synchronized void miss() {
+    private final synchronized void miss() {
         total_requests++;
         misses++;
     }
@@ -117,7 +117,7 @@ public abstract class Cache<K,V> {
      * Used to when a match for the request is found on cache
      * Number of requests and hits are incremented
      */
-    private synchronized void hit() {
+    private final synchronized void hit() {
         total_requests++;
         hits++;
     }
@@ -125,7 +125,7 @@ public abstract class Cache<K,V> {
     /**
      * Used to send statistic data of this cache
      */
-    public class Statistics {
+    public final class Statistics {
         private int total_requests;
         private int hits;
         private int misses;
@@ -163,7 +163,7 @@ public abstract class Cache<K,V> {
      * @param key key associated with data
      * @return cached data
      */
-    public final synchronized V get_cached_data(K key) {
+    public synchronized V get_cached_data(K key) {
         if (!data.containsKey(key)) {
             miss();
             return null;
@@ -187,7 +187,7 @@ public abstract class Cache<K,V> {
      * @param key key associated with data
      * @param value new cached data
      */
-    public final synchronized void cache_data(K key, V value) {
+    public synchronized void cache_data(K key, V value) {
         if (!data.containsKey(key)) {
             Value val = new Value(value);
 
