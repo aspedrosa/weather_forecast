@@ -61,8 +61,8 @@ public class SearchCacheTest {
         assertEquals(Collections.emptyList(), search_cache.get_cached_data("aveiro"));
 
         Cache.Statistics stats = search_cache.get_stats();
-        assertEquals(2, stats.get_total_requests());
-        assertEquals(1, stats.get_hits());
+        assertEquals(1, stats.get_total_requests());
+        assertEquals(0, stats.get_hits());
         assertEquals(1, stats.get_misses());
     }
 
