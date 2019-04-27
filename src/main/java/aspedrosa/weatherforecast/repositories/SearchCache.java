@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -16,7 +17,7 @@ public class SearchCache extends Cache<String, List<SearchResult>> {
     public synchronized List<SearchResult> get_cached_data(String key) {
         if (!data.containsKey(key)) {
             miss();
-            return null;
+            return Collections.emptyList();
         }
 
         Value val = data.get(key);
@@ -24,7 +25,7 @@ public class SearchCache extends Cache<String, List<SearchResult>> {
         if (val.has_expired()) {
             data.remove(key);
             miss();
-            return null;
+            return Collections.emptyList();
         }
 
         val.reset_expiration_time();

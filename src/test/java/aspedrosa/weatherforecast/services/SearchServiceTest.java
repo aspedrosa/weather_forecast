@@ -71,9 +71,9 @@ public class SearchServiceTest {
 
         assertEquals(response.size(), 1);
 
-        assertEquals(response.get(0).get_display_name(), "Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal");
-        assertEquals(response.get(0).get_latitude(), 40.60552025, 0);
-        assertEquals(response.get(0).get_longitude(), -8.68594848811954, 0);
+        assertEquals("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal", response.get(0).get_display_name());
+        assertEquals(40.60552025, response.get(0).get_latitude(), 0);
+        assertEquals(-8.68594848811954, response.get(0).get_longitude(), 0);
 
         search_service.search("ilhavo");
 

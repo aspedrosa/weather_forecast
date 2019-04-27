@@ -69,8 +69,8 @@ public class LocationIqAPIServiceTest {
 
         assertEquals(results.size(), 1);
 
-        assertEquals(results.get(0).get_display_name(), "Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal");
-        assertEquals(results.get(0).get_latitude(), 40.60552025, 0);
-        assertEquals(results.get(0).get_longitude(), -8.68594848811954, 0);
+        assertEquals("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal", results.get(0).get_display_name());
+        assertEquals(40.60552025, results.get(0).get_latitude(), 0);
+        assertEquals(-8.68594848811954, results.get(0).get_longitude(), 0);
     }
 }

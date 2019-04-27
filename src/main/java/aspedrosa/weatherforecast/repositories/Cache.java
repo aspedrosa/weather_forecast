@@ -43,7 +43,7 @@ public abstract class Cache<K,V> {
         /**
          * Unix timestamp when this value expires
          */
-        private int expiration_time;
+        private long expiration_time;
         /**
          * Cached data
          */
@@ -55,7 +55,7 @@ public abstract class Cache<K,V> {
          */
         public Value(V data) {
             this.data = data;
-            this.expiration_time = (int) (System.currentTimeMillis() / 1000) + TIME_TO_LIVE;
+            this.expiration_time = System.currentTimeMillis() + TIME_TO_LIVE * 1000;
         }
 
         /**
@@ -63,14 +63,14 @@ public abstract class Cache<K,V> {
          * @return true if cached data has expired, false otherwise
          */
         public boolean has_expired() {
-            return (System.currentTimeMillis() / 1000) > this.expiration_time;
+            return System.currentTimeMillis() > this.expiration_time;
         }
 
         /**
          * Used on
          */
         public void reset_expiration_time() {
-            this.expiration_time = (int) (System.currentTimeMillis() / 1000) + TIME_TO_LIVE;
+            this.expiration_time = System.currentTimeMillis() + TIME_TO_LIVE * 1000;
         }
 
         /**
@@ -87,7 +87,7 @@ public abstract class Cache<K,V> {
          */
         public void update_data(V data) {
             this.data = data;
-            this.expiration_time = (int) (System.currentTimeMillis() / 1000) + TIME_TO_LIVE;
+            this.expiration_time = System.currentTimeMillis() + TIME_TO_LIVE * 1000;
         }
 
     }
