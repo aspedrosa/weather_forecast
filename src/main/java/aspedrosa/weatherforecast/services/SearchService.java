@@ -19,7 +19,7 @@ public class SearchService {
      * Search api service where the call to the external api is done
      */
     @Autowired
-    public LocationIqAPIService search_api_service;
+    public LocationIqAPIService search_api_service; // TODO is public because is useful for tests
 
     @Autowired
     SearchCache search_cache;

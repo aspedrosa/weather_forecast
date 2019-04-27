@@ -31,23 +31,18 @@ public abstract class Cache<K,V> {
     private int misses;
 
     /**
-     * Expiration time for the data held by this cache
-     */
-    private final int TIME_TO_LIVE;
-
-    /**
      * Class to use as value for the internal map to store cache data.
      * Stores the expiration time for this value and the value itself.
      */
     protected class Value {
         /**
-         * Unix timestamp when this value expires
+         * Unix timestamp when this value was written
          */
-        private long expiration_time;
+        public long write_date;
         /**
          * Cached data
          */
-        private V data;
+        public V data;
 
         /**
          * Main constructor
@@ -55,41 +50,8 @@ public abstract class Cache<K,V> {
          */
         public Value(V data) {
             this.data = data;
-            this.expiration_time = System.currentTimeMillis() + TIME_TO_LIVE * 1000;
+            this.write_date = System.currentTimeMillis();
         }
-
-        /**
-         * Verifies if the value expired accordingly to the internal expiration time
-         * @return true if cached data has expired, false otherwise
-         */
-        public boolean has_expired() {
-            return System.currentTimeMillis() > this.expiration_time;
-        }
-
-        /**
-         * Used on
-         */
-        public void reset_expiration_time() {
-            this.expiration_time = System.currentTimeMillis() + TIME_TO_LIVE * 1000;
-        }
-
-        /**
-         * Gets the cached data
-         * @return cached data
-         */
-        public V get_data() {
-            return data;
-        }
-
-        /**
-         * Stores new data and updates the expiration time
-         * @param data new cached data
-         */
-        public void update_data(V data) {
-            this.data = data;
-            this.expiration_time = System.currentTimeMillis() + TIME_TO_LIVE * 1000;
-        }
-
     }
 
     /**
@@ -103,15 +65,50 @@ public abstract class Cache<K,V> {
     public Cache() {
         hits = misses = total_requests = 0;
         data = new HashMap<>();
+    }
 
-        TIME_TO_LIVE = Integer.parseInt(System.getenv("TIME_TO_LIVE"));
+    /**
+     * Verifies if the value expired accordingly to the internal expiration time
+     *
+     * @param write_date when a specific value was written
+     *
+     * @return true if cached data has expired, false otherwise
+     */
+    public abstract boolean has_value_expired(long write_date);
+
+    /**
+     * Function called whenever a certain value expired
+     * By default just removes the value, but the method can be overwritten
+     *  on subclasses
+     *
+     * @param key key of the value that has expired
+     *
+     * @return false if the value was just removed, true if it was updated
+     */
+    public boolean handle_expired_value(K key) {
+        data.remove(key);
+        return false;
+    }
+
+    /**
+     * Function called whenever a value is going to be written to the cache
+     *  for a given key, but some other value is already stored.
+     * By default overwrites the old data, but the method can be overwritten
+     *  on subclasses
+     *
+     * @param val
+     * @param new_data
+     */
+    public void update_value(Value val, V new_data) {
+        val.data = new_data;
+        val.write_date = System.currentTimeMillis();
     }
 
     /**
      * Used to when a match for the request is not found on cache
      * Number of requests and misses are incremented
      */
-    protected synchronized void miss() {
+    private synchronized void miss() {
         total_requests++;
         misses++;
     }
@@ -120,7 +117,7 @@ public abstract class Cache<K,V> {
      * Used to when a match for the request is found on cache
      * Number of requests and hits are incremented
      */
-    protected synchronized void hit() {
+    private synchronized void hit() {
         total_requests++;
         hits++;
     }
@@ -166,7 +163,23 @@ public abstract class Cache<K,V> {
      * @param key key associated with data
      * @return cached data
      */
-    public abstract V get_cached_data(K key);
+    public final synchronized V get_cached_data(K key) {
+        if (!data.containsKey(key)) {
+            miss();
+            return null;
+        }
+
+        Value val = data.get(key);
+
+        if (has_value_expired(val.write_date))
+            if (!handle_expired_value(key)) { //if it did not handle (just removed it) then consider a miss
+                miss();
+                return null;
+            }
+
+        hit();
+        return val.data;
+    }
 
     /**
      * Used to store results retrieved from an external api
@@ -174,5 +187,13 @@ public abstract class Cache<K,V> {
      * @param key key associated with data
      * @param value new cached data
      */
-    public abstract void cache_data(K key, V value);
+    public final synchronized void cache_data(K key, V value) {
+        if (!data.containsKey(key)) {
+            Value val = new Value(value);
+
+            data.put(key, val);
+        }
+        else
+            update_value(data.get(key), value);
+    }
 }

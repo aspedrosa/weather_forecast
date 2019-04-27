@@ -1,7 +1,11 @@
 package aspedrosa.weatherforecast.services;
 
-import aspedrosa.weatherforecast.domain.ForecastResult;
+import aspedrosa.weatherforecast.domain.DailyForecast;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 
 /**
@@ -9,6 +13,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DarkSkyAPIService extends ForecastAPIService {
+
+    @Autowired
+    RestTemplate rest_template;
 
     /**
      * @see APIService
@@ -23,14 +30,14 @@ public class DarkSkyAPIService extends ForecastAPIService {
             args[0] +
             "," +
             args[1] +
-            "?units=si";
+            "?units=si&exclude=minutely,hourly,alerts,flags";
     }
 
     /**
      * @see ForecastAPIService
      */
     @Override
-    public ForecastResult forecast(double latitude, double longitude, int days_count, int days_offset) {
-        return null;
+    public DailyForecast[] forecast(double latitude, double longitude, int days_count) {
+        return null; // TODO
     }
 }
