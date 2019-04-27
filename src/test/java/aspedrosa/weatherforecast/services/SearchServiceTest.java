@@ -2,7 +2,6 @@ package aspedrosa.weatherforecast.services;
 
 import aspedrosa.weatherforecast.domain.SearchResult;
 import aspedrosa.weatherforecast.repositories.SearchCache;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -13,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -37,33 +37,37 @@ public class SearchServiceTest {
     @MockBean
     SearchCache search_cache;
 
-    List<SearchResult> ilhavo;
-
-    @Before
-    public  void setUp() {
-        ilhavo = new ArrayList<>();
-        ilhavo.add(new SearchResult("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal",
-                                    40.60552025,
-                                    -8.68594848811954));
-
-        List<SearchResult> empty = new ArrayList<>();
-
-        Mockito.when(search_api_service.search("ilhavo")).thenReturn(ilhavo);
-        Mockito.when(search_api_service.search("asdfsdfh")).thenReturn(empty);
-
-        Mockito.when(search_cache.get_cached_data("ilhavo")).thenReturn(null).thenReturn(ilhavo);
-        Mockito.when(search_cache.get_cached_data("asdfsdfh")).thenReturn(null).thenReturn(null);
-    }
-
+    /**
+     * Test not found response.
+     * Verify that checked cache but didn't store
+     */
     @Test
     public void search_no_result() {
+        Mockito.when(search_api_service.search("asdfsdfh")).thenReturn(Collections.emptyList());
+        Mockito.when(search_cache.get_cached_data("asdfsdfh")).thenReturn(Collections.emptyList()).thenReturn(Collections.emptyList());
+
         List<SearchResult> response = search_service.search("asdfsdfh");
 
         assertTrue(response.isEmpty());
+
+        Mockito.verify(search_cache, Mockito.times(1)).get_cached_data("asdfsdfh");
+        Mockito.verify(search_cache, Mockito.times(0)).cache_data("asdfsdfh", Collections.emptyList());
     }
 
+    /**
+     * Test two regular searches
+     * Verify that checked cached for both times but
+     *  only stored that one time
+     */
     @Test
     public void search() {
+        List<SearchResult> ilhavo = new ArrayList<>();
+        ilhavo.add(new SearchResult("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal",
+            40.60552025,
+            -8.68594848811954));
+
+        Mockito.when(search_api_service.search("ilhavo")).thenReturn(ilhavo);
+        Mockito.when(search_cache.get_cached_data("ilhavo")).thenReturn(Collections.emptyList()).thenReturn(ilhavo);
 
         List<SearchResult> response = search_service.search("ilhavo");
 

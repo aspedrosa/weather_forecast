@@ -1,6 +1,7 @@
 package aspedrosa.weatherforecast.services;
 
 import aspedrosa.weatherforecast.domain.SearchResult;
+import aspedrosa.weatherforecast.repositories.SearchCache;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -19,51 +20,58 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for extration of search results from a
- * forward geocoding api
+ * Test the service and repository layer related
+ *  to location search
  */
 @RunWith(SpringRunner.class)
-public class LocationIqAPIServiceTest {
+public class SearchServiceIntegrationTest {
 
     @TestConfiguration
     static class SearchServiceTestContextConfiguration {
         @Bean
+        public SearchService search_service() {
+            return new SearchService();
+        }
+
+        @Bean
         public LocationIqAPIService search_api_service() {
             return new LocationIqAPIService();
         }
-    }
 
+        @Bean
+        public SearchCache search_cache() {
+            return new SearchCache();
+        }
+    }
     @Autowired
-    LocationIqAPIService search_api_service;
+    SearchService search_service;
 
     @MockBean
     RestTemplate rest_template;
 
     /**
-     * Test if handles a not found response from the api
+     * Test not found response
      */
     @Test
-    public void handle_exception() {
+    public void search_no_result() {
         Mockito.when(rest_template.getForEntity(
-            search_api_service.build_api_url(
+            search_service.search_api_service.build_api_url(
                 new Object[] {"asdfsdfh"}),
             String.class)
         ).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        List<SearchResult> results = search_api_service.search("asdfsdfh");
+        List<SearchResult> response = search_service.search("asdfsdfh");
 
-        assertTrue(results.isEmpty());
+        assertTrue(response.isEmpty());
     }
 
     /**
-     * Test for normal response
-     *  and if does the mean of the coordinates
-     *  for entries with same display name
+     * Test regular response
      */
     @Test
-    public void handle_duplicate_display_names() {
+    public void search() {
         Mockito.when(rest_template.getForEntity(
-            search_api_service.build_api_url(
+            search_service.search_api_service.build_api_url(
                 new Object[] {"ilhavo"}),
             String.class)
         ).thenReturn(new ResponseEntity<>(
@@ -71,14 +79,14 @@ public class LocationIqAPIServiceTest {
             HttpStatus.ACCEPTED
         ));
 
-        List<SearchResult> results = search_api_service.search("ilhavo");
+        List<SearchResult> response = search_service.search("ilhavo");
 
-        assertFalse(results.isEmpty());
+        assertFalse(response.isEmpty());
 
-        assertEquals(results.size(), 1);
+        assertEquals(response.size(), 1);
 
-        assertEquals("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal", results.get(0).get_display_name());
-        assertEquals(40.60552025, results.get(0).get_latitude(), 0);
-        assertEquals(-8.68594848811954, results.get(0).get_longitude(), 0);
+        assertEquals("Ílhavo, Aveiro, Baixo Vouga, Centro, Portugal", response.get(0).get_display_name());
+        assertEquals(40.60552025, response.get(0).get_latitude(), 0);
+        assertEquals(-8.68594848811954, response.get(0).get_longitude(), 0);
     }
 }

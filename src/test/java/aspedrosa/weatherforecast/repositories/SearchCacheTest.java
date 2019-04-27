@@ -15,6 +15,9 @@ import java.util.List;
 import static org.awaitility.Awaitility.*;
 import static org.junit.Assert.*;
 
+/**
+ * Unit tests for cache related to location search
+ */
 @RunWith(SpringRunner.class)
 public class SearchCacheTest {
 
@@ -27,11 +30,20 @@ public class SearchCacheTest {
         TIME_TO_LIVE = Integer.parseInt(System.getenv("TIME_TO_LIVE"));
     }
 
+    /**
+     * Before any test create a new Search Cache
+     * This way we can assume there is no data on cache on
+     *  each test
+     */
     @Before
     public void setUp() {
         search_cache = new SearchCache();
     }
 
+    /**
+     * Test that data is expired after TIME_TO_LIVE seconds
+     * Also test statistics for cache (total requests, hits, misses)
+     */
     @Test
     public void no_data_after_time_to_live() {
         List<SearchResult> data = new ArrayList<>();
@@ -39,8 +51,6 @@ public class SearchCacheTest {
         data.add(new SearchResult("Praia da Barra, Aveiro", 40.6, -8.7));
         data.add(new SearchResult("Esgueira, Aveiro", 40.6, -8.6));
         search_cache.cache_data("aveiro", data);
-
-        assertNotEquals(Collections.emptyList(), search_cache.get_cached_data("aveiro"));
 
         long then = System.currentTimeMillis();
 
@@ -56,6 +66,10 @@ public class SearchCacheTest {
         assertEquals(1, stats.get_misses());
     }
 
+    /**
+     * Test that after caching data for a specific key
+     *  that data is return on the next get_cached_data
+     */
     @Test
     public void data_after_insert() {
         List<SearchResult> data = new ArrayList<>();

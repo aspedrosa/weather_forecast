@@ -1,13 +1,17 @@
 package aspedrosa.weatherforecast.controllers;
 
+import aspedrosa.weatherforecast.domain.SearchResult;
 import aspedrosa.weatherforecast.services.ForecastService;
 import aspedrosa.weatherforecast.services.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Where the endpoints of this application are located
@@ -37,7 +41,7 @@ public class WeatherController {
      * @param days_offset how many days after today to ignore forecast
      * @return HTTP response with forecast results on the data field
      */
-    @GetMapping
+    @GetMapping("/forecast")
     public ResponseEntity forecast(@RequestParam double longitude,
                                    @RequestParam double latitude,
                                    @RequestParam (required = false) Integer days_number,
@@ -51,8 +55,20 @@ public class WeatherController {
      * @param location input from the user of a location to search for
      * @return HTTP response with search results on the data field
      */
-    @GetMapping
-    public ResponseEntity search(@RequestParam String location) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchResult>> search(@RequestParam String location) {
+        List<SearchResult> data = search_service.search(location);
+
+        HttpStatus status;
+
+        if (data.isEmpty())
+            status = HttpStatus.NOT_FOUND;
+        else
+            status = HttpStatus.ACCEPTED;
+
+        return new ResponseEntity<>(
+            data,
+            status
+        );
     }
 }

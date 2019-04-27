@@ -6,6 +6,7 @@ import aspedrosa.weatherforecast.repositories.SearchCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class SearchService {
      * Search api service where the call to the external api is done
      */
     @Autowired
-    LocationIqAPIService search_api_service;
+    public LocationIqAPIService search_api_service;
 
     @Autowired
     SearchCache search_cache;
@@ -30,11 +31,14 @@ public class SearchService {
      * @return list of all search results that match the input of the user
      */
     public List<SearchResult> search(String user_input_location) {
-        List<SearchResult> data;
-        if ((data = search_cache.get_cached_data(user_input_location)) != null)
+        List<SearchResult> data = search_cache.get_cached_data(user_input_location);
+        if (!data.isEmpty())
             return data;
 
         data = search_api_service.search(user_input_location);
+
+        if (data.isEmpty())
+            return Collections.emptyList();
 
         search_cache.cache_data(user_input_location, data);
 
