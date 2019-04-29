@@ -62,6 +62,7 @@ public class ForecastService {
      * Decides the data source. First uses the cache then the api services,
      *  given priority to the primary, using the backup no in case the primary
      *  fails
+     * A call to an api retrieves both current and forecast data
      *
      * @param latitude of the location
      * @param longitude of the location
@@ -76,8 +77,6 @@ public class ForecastService {
 
         daily_forecasts = daily_cache.get_cached_data(coords);
         if (daily_forecasts == null) {
-            daily_cache.correct_stats();
-            current_cache.correct_stats(); // assume if there is no data on daily, there is no data on current
 
             return retrieve_from_apis(latitude, longitude, days_count);
         }
@@ -86,17 +85,13 @@ public class ForecastService {
         if (daily_forecasts.size() >= days_count) {
             current_weather = current_cache.get_cached_data(coords);
 
-            if (current_weather == null) {
-                current_cache.correct_stats();
-
+            if (current_weather == null)
                 return retrieve_from_apis(latitude, longitude, days_count);
-            }
 
             return new Forecast(daily_forecasts.subList(0, days_count), current_weather);
         }
 
         daily_cache.correct_stats();
-        current_cache.correct_stats();
 
         return retrieve_from_apis(latitude, longitude, days_count);
     }

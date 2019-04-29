@@ -24,10 +24,10 @@ import static org.junit.Assert.*;
  *  to location search
  */
 @RunWith(SpringRunner.class)
-public class SearchServiceIntegrationTest {
+public class SearchServiceIT {
 
     @TestConfiguration
-    static class SearchServiceIntegrationTestContextConfiguration {
+    static class SearchServiceITContextConfiguration {
         @Bean
         public SearchService search_service() {
             return new SearchService();

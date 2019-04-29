@@ -25,7 +25,7 @@ import org.springframework.web.client.RestTemplate;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class WeatherControllerIntegrationTest {
+public class WeatherControllerIT {
 
     @Autowired
     MockMvc mock_mvc;
