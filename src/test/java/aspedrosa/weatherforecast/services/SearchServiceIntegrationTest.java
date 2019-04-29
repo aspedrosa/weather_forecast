@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 public class SearchServiceIntegrationTest {
 
     @TestConfiguration
-    static class SearchServiceTestContextConfiguration {
+    static class SearchServiceIntegrationTestContextConfiguration {
         @Bean
         public SearchService search_service() {
             return new SearchService();

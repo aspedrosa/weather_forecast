@@ -1,6 +1,7 @@
 package aspedrosa.weatherforecast.repositories;
 
 import aspedrosa.weatherforecast.domain.SearchResult;
+import org.joda.time.DateTimeUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,10 +12,6 @@ import java.util.List;
 @Repository
 public class SearchCache extends Cache<String, List<SearchResult>> {
 
-    public SearchCache() {
-        super();
-    }
-
     /**
      * Expires after one month
      *
@@ -22,7 +19,7 @@ public class SearchCache extends Cache<String, List<SearchResult>> {
      */
     @Override
     public boolean has_value_expired(long write_date) {
-        return System.currentTimeMillis() > write_date + 2678400000L;
+        return DateTimeUtils.currentTimeMillis() > write_date + 2678400000L;
     }
 
 }

@@ -1,5 +1,7 @@
 package aspedrosa.weatherforecast.repositories;
 
+import org.joda.time.DateTimeUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,12 +25,12 @@ public abstract class Cache<K,V> {
     /**
      * Number of retrieving data calls that used cache
      */
-    private int hits;
+    protected int hits;
 
     /**
      * Number of retrieving data calls that didn't used cache
      */
-    private int misses;
+    protected int misses;
 
     /**
      * Class to use as value for the internal map to store cache data.
@@ -50,7 +52,7 @@ public abstract class Cache<K,V> {
          */
         public Value(V data) {
             this.data = data;
-            this.write_date = System.currentTimeMillis();
+            this.write_date = DateTimeUtils.currentTimeMillis();
         }
     }
 
@@ -74,7 +76,7 @@ public abstract class Cache<K,V> {
      *
      * @return true if cached data has expired, false otherwise
      */
-    public abstract boolean has_value_expired(long write_date);
+    protected abstract boolean has_value_expired(long write_date);
 
     /**
      * Function called whenever a certain value expired
@@ -85,7 +87,7 @@ public abstract class Cache<K,V> {
      *
      * @return false if the value was just removed, true if it was updated
      */
-    public boolean handle_expired_value(K key) {
+    protected boolean handle_expired_value(K key) {
         data.remove(key);
         return false;
     }
@@ -96,19 +98,19 @@ public abstract class Cache<K,V> {
      * By default overwrites the old data, but the method can be overwritten
      *  on subclasses
      *
-     * @param val
-     * @param new_data
+     * @param val value to update
+     * @param new_data new data received to cache
      */
-    public void update_value(Value val, V new_data) {
+    protected void update_value(Value val, V new_data) {
         val.data = new_data;
-        val.write_date = System.currentTimeMillis();
+        val.write_date = DateTimeUtils.currentTimeMillis();
     }
 
     /**
      * Used to when a match for the request is not found on cache
      * Number of requests and misses are incremented
      */
-    private final synchronized void miss() {
+    private void miss() {
         total_requests++;
         misses++;
     }
@@ -117,7 +119,7 @@ public abstract class Cache<K,V> {
      * Used to when a match for the request is found on cache
      * Number of requests and hits are incremented
      */
-    private final synchronized void hit() {
+    private void hit() {
         total_requests++;
         hits++;
     }
@@ -130,7 +132,7 @@ public abstract class Cache<K,V> {
         private int hits;
         private int misses;
 
-        public Statistics(int total_requests, int hits, int misses) {
+        private Statistics(int total_requests, int hits, int misses) {
             this.total_requests = total_requests;
             this.hits = hits;
             this.misses = misses;
@@ -183,6 +185,9 @@ public abstract class Cache<K,V> {
 
     /**
      * Used to store results retrieved from an external api
+     * If data was already associated with the key
+     *  received, call the update_value method and update
+     *  the write_time for the stored value
      *
      * @param key key associated with data
      * @param value new cached data
@@ -193,7 +198,9 @@ public abstract class Cache<K,V> {
 
             data.put(key, val);
         }
-        else
+        else {
             update_value(data.get(key), value);
+            data.get(key).write_date = DateTimeUtils.currentTimeMillis();
+        }
     }
 }

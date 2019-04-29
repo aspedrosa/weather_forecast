@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 public class LocationIqAPIServiceTest {
 
     @TestConfiguration
-    static class SearchServiceTestContextConfiguration {
+    static class LocationIqAPIServiceTestContextConfiguration {
         @Bean
         public LocationIqAPIService search_api_service() {
             return new LocationIqAPIService();
