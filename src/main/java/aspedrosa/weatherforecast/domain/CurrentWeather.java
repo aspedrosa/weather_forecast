@@ -29,22 +29,22 @@ public class CurrentWeather {
     /**
      * index
      */
-    private int uv;
+    private double uv;
 
     /**
      * meters per second
      */
-    private int wind_speed;
+    private double wind_speed;
 
     /**
      * internet location
      */
-    private String icon = "";
+    private String icon;
 
     /**
      * Main constructor
      */
-    public CurrentWeather(String summary, double temperature, double humidity, double pressure, int uv, int wind_speed, String icon) {
+    public CurrentWeather(String summary, double temperature, double humidity, double pressure, double uv, double wind_speed, String icon) {
         this.summary = summary;
         this.temperature = temperature;
         this.humidity = humidity;
@@ -59,59 +59,59 @@ public class CurrentWeather {
      */
     public CurrentWeather() {}
 
-    public String getSummary() {
+    public String get_summary() {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void set_summary(String summary) {
         this.summary = summary;
     }
 
-    public double getTemperature() {
+    public double get_temperature() {
         return temperature;
     }
 
-    public void setTemperature(double temperature) {
+    public void set_temperature(double temperature) {
         this.temperature = temperature;
     }
 
-    public double getHumidity() {
+    public double get_humidity() {
         return humidity;
     }
 
-    public void setHumidity(double humidity) {
+    public void set_humidity(double humidity) {
         this.humidity = humidity;
     }
 
-    public double getPressure() {
+    public double get_pressure() {
         return pressure;
     }
 
-    public void setPressure(double pressure) {
+    public void set_pressure(double pressure) {
         this.pressure = pressure;
     }
 
-    public int getUv() {
+    public double get_uv() {
         return uv;
     }
 
-    public void setUv(int uv) {
+    public void set_uv(double uv) {
         this.uv = uv;
     }
 
-    public int getWind_speed() {
+    public double get_wind_speed() {
         return wind_speed;
     }
 
-    public void setWind_speed(int wind_speed) {
+    public void set_wind_speed(double wind_speed) {
         this.wind_speed = wind_speed;
     }
 
-    public String getIcon() {
+    public String get_icon() {
         return icon;
     }
 
-    public void setIcon(String icon) {
+    public void set_icon(String icon) {
         this.icon = icon;
     }
 }

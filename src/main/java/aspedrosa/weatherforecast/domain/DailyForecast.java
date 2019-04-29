@@ -29,14 +29,14 @@ public class DailyForecast {
     /**
      * index
      */
-    private int uv;
+    private double uv;
 
     /**
      * internet location
      */
     private String icon;
 
-    public DailyForecast(String summary, double humidity, double max_temperature, double min_temperature, int uv, String icon) {
+    public DailyForecast(String summary, double humidity, double max_temperature, double min_temperature, double uv, String icon) {
         this.summary = summary;
         this.humidity = humidity;
         this.max_temperature = max_temperature;
@@ -48,51 +48,51 @@ public class DailyForecast {
     public DailyForecast() {
     }
 
-    public String getSummary() {
+    public String get_summary() {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void set_summary(String summary) {
         this.summary = summary;
     }
 
-    public double getHumidity() {
+    public double get_humidity() {
         return humidity;
     }
 
-    public void setHumidity(double humidity) {
+    public void set_humidity(double humidity) {
         this.humidity = humidity;
     }
 
-    public double getMax_temperature() {
+    public double get_max_temperature() {
         return max_temperature;
     }
 
-    public void setMax_temperature(double max_temperature) {
+    public void set_max_temperature(double max_temperature) {
         this.max_temperature = max_temperature;
     }
 
-    public double getMin_temperature() {
+    public double get_min_temperature() {
         return min_temperature;
     }
 
-    public void setMin_temperature(double min_temperature) {
+    public void set_min_temperature(double min_temperature) {
         this.min_temperature = min_temperature;
     }
 
-    public int getUv() {
+    public double get_uv() {
         return uv;
     }
 
-    public void setUv(int uv) {
+    public void set_uv(double uv) {
         this.uv = uv;
     }
 
-    public String getIcon() {
+    public String get_icon() {
         return icon;
     }
 
-    public void setIcon(String icon) {
+    public void set_icon(String icon) {
         this.icon = icon;
     }
 }
