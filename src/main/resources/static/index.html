@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Ya</title>
+    <title>Weather Forecast</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -46,26 +46,65 @@
     </style>
 
   </head>
-  <body>
-    <div class="container padding">
-      <div class="row">
-        <h1>Weather Forecast</h1>
-      </div>
-      <div class="form-row">
-        <label class="col-md-1 col-form-label" for="location_input">Location</label>
-        <div class="col-md-4">
-          <input id="location_input" class="form-control">
-        </div>
-        <button id="search_btn" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-      </div>
-    </div>
-    <div class="container padding">
-      <button id="clear_btn" class="btn btn-warning"><i class="fas fa-backspace"></i> Clear Results</button>
-    </div>
-    <div class="container padding">
-      <div id="search_results" class="row">
-      </div>
-    </div>
-    <script src="index.js"></script>
-  </body>
+      <body>
+          <div class="container padding">
+              <div class="row">
+                  <h1>Weather Forecast</h1>
+              </div>
+              <div class="form-row">
+                  <label class="col-md-1 col-form-label" for="location_input">Location</label>
+                  <div class="col-md-4">
+                      <input id="location_input" class="form-control">
+                  </div>
+                  <button id="search_btn" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+              </div>
+          </div>
+          <div id="search_display" style="display:none">
+              <div class="container padding">
+                  <div class="form-row">
+                      <div class="col-md-2">
+                          <button id="clear_btn" class="btn btn-warning"><i class="fas fa-backspace"></i> Clear Results</button>
+                      </div>
+                      <label class="col-md-1 col-form-label" for="days_count_select">Days count</label>
+                      <select id="days_count_select" class="custom-select col-md-2">
+                          <option active>1</option>
+                          <option>2</option>
+                          <option>3</option>
+                          <option>4</option>
+                          <option>5</option>
+                          <option>6</option>
+                          <option>7</option>
+                          <option>8</option>
+                      </select>
+                  </div>
+              </div>
+              <div class="container padding">
+                  <div id="search_results" class="row" style="background-color: white;
+                   border: 3px solid white; border-radius: 6px; -moz-border-radius: 6px;">
+                      <table id="search_table" class="table">
+                          <thead>
+                              <tr>
+                                  <th></th>
+                                  <th>Name</th>
+                                  <th>Latitude</th>
+                                  <th>Longitude</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <!-- Inserted dynamically -->
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+          <div id="forecast_display" class="container padding" style="display:none">
+              <div id="current_weather" class="row justify-content-center">
+                  <!-- Inserted dynamically -->
+              </div>
+              <div id="daily_forecast" class="row justify-content-center">
+                  <!-- Inserted dynamically -->
+              </div>
+          </div>
+          <script src="index.js"></script>
+      </body>
 </html>
