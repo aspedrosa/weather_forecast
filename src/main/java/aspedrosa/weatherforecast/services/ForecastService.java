@@ -76,10 +76,8 @@ public class ForecastService {
         List<DailyForecast> daily_forecasts;
 
         daily_forecasts = daily_cache.get_cached_data(coords);
-        if (daily_forecasts == null) {
-
+        if (daily_forecasts == null)
             return retrieve_from_apis(latitude, longitude, days_count);
-        }
 
         CurrentWeather current_weather;
         if (daily_forecasts.size() >= days_count) {
