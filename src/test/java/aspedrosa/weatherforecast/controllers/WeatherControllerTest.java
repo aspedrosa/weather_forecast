@@ -21,6 +21,11 @@ import java.util.List;
 /**
  * Unit tests for the web layer
  *  mocking services dependencies
+ *
+ * Because all the queries to forecast
+ *  just simply call a forecast, both the integration
+ *  and unit test will be the same, for that only integration
+ *  tests were done
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(WeatherController.class)
@@ -34,9 +39,6 @@ public class WeatherControllerTest {
 
     @MockBean
     ForecastService forecast_service;
-
-    public void forecast() {
-    }
 
     /**
      * Test a regular search result

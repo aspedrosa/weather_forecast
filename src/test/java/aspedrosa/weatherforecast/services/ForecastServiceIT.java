@@ -5,7 +5,6 @@ import aspedrosa.weatherforecast.domain.DailyForecast;
 import aspedrosa.weatherforecast.domain.Forecast;
 import aspedrosa.weatherforecast.repositories.CurrentWeatherCache;
 import aspedrosa.weatherforecast.repositories.DailyForecastCache;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;

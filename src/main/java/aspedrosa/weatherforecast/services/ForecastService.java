@@ -34,13 +34,13 @@ public class ForecastService {
      * Api service with higher priority of use
      */
     @Autowired
-    ApixuAPIService primary_api_service;
+    public ApixuAPIService primary_api_service;
 
     /**
      * Api service used if the primary one fails
      */
     @Autowired
-    DarkSkyAPIService backup_api_service;
+    public DarkSkyAPIService backup_api_service;
 
     private Forecast retrieve_from_apis(double latitude, double longitude, int days_count) {
         Forecast forecast;
