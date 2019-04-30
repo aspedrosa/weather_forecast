@@ -22,7 +22,7 @@ public class SearchResult {
     private  double longitude;
 
     /**
-     * Empty constructor. Suposed to use setters
+     * Empty constructor. Supposed to use setters
      */
     public SearchResult() {}
 

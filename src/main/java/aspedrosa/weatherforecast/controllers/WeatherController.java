@@ -1,5 +1,6 @@
 package aspedrosa.weatherforecast.controllers;
 
+import aspedrosa.weatherforecast.domain.Forecast;
 import aspedrosa.weatherforecast.domain.SearchResult;
 import aspedrosa.weatherforecast.services.ForecastService;
 import aspedrosa.weatherforecast.services.SearchService;
@@ -37,16 +38,18 @@ public class WeatherController {
      *
      * @param longitude of the location
      * @param latitude of the location
-     * @param days_number data of how much days
-     * @param days_offset how many days after today to ignore forecast
      * @return HTTP response with forecast results on the data field
      */
     @GetMapping("/forecast")
-    public ResponseEntity forecast(@RequestParam double longitude,
-                                   @RequestParam double latitude,
-                                   @RequestParam (required = false) Integer days_number,
-                                   @RequestParam (required = false) Integer days_offset) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+    public ResponseEntity<Forecast> forecast(@RequestParam double longitude,
+                                             @RequestParam double latitude,
+                                             @RequestParam (required = false, defaultValue="1") Integer days_count) {
+        Forecast forecast = forecast_service.forecast(latitude, longitude, days_count);
+
+        return new ResponseEntity<>(
+            forecast,
+            HttpStatus.ACCEPTED
+        );
     }
 
     /**
