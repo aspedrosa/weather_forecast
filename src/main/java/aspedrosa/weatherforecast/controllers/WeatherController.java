@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,6 +61,15 @@ public class WeatherController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<SearchResult>> search(@RequestParam String location) {
+        location = location.trim().toLowerCase();
+
+        if (location.equals("")) {
+            return new ResponseEntity<>(
+                Collections.emptyList(),
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
         List<SearchResult> data = search_service.search(location);
 
         HttpStatus status;

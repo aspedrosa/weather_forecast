@@ -40,6 +40,16 @@ public class WeatherControllerTest {
     @MockBean
     ForecastService forecast_service;
 
+    @Test
+    public void invalid_search_field() throws Exception {
+        mock_mvc.perform(
+            MockMvcRequestBuilders
+                .get("/api/search")
+                .param("location", "  "))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().json("[]"));
+    }
+
     /**
      * Test a regular search result
      *
