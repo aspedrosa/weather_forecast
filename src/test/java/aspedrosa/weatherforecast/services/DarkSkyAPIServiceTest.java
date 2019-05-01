@@ -63,7 +63,7 @@ public class DarkSkyAPIServiceTest {
 
         CurrentWeather current_weather = forecast.getCurrent_weather();
         assertEquals(87, current_weather.get_humidity(), 0);
-        assertNull(current_weather.get_icon());
+        assertEquals("images/Cloud-Sun.svg", current_weather.get_icon());
         assertEquals(101716, current_weather.get_pressure(), 0);
         assertEquals("Partly Cloudy", current_weather.get_summary());
         assertEquals(1, current_weather.get_uv(), 0);
@@ -75,7 +75,7 @@ public class DarkSkyAPIServiceTest {
         DailyForecast daily_forecast = daily_forecasts.get(0);
         assertEquals("Foggy in the morning.", daily_forecast.get_summary());
         assertEquals(91, daily_forecast.get_humidity(), 0);
-        assertNull(daily_forecast.get_icon());
+        assertEquals("images/Cloud-Fog.svg", daily_forecast.get_icon());
         assertEquals(17.02, daily_forecast.get_max_temperature(), 0);
         assertEquals(11.25, daily_forecast.get_min_temperature(), 0);
         assertEquals(5, daily_forecast.get_uv(), 0);
