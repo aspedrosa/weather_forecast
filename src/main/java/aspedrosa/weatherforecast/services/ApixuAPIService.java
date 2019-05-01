@@ -39,7 +39,7 @@ public class ApixuAPIService extends ForecastAPIService {
      */
     @Override
     public int MAX_DAYS_COUNT() {
-        return 10;
+        return 7;
     }
 
     /**

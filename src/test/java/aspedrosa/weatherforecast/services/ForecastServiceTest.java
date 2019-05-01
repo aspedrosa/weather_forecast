@@ -65,10 +65,59 @@ public class ForecastServiceTest {
     }
 
     /**
+     * Whenever the clients asks for a number of days that
+     *  the api can give, then it should call the external api
+     *  that offers the most number of days of forecast data
+     * On this specific test we are considering that the primary
+     *  external api can offer more days, so only that one
+     *  should be called
+     */
+    @Test
+    public void use_primary_when_offers_more_days() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(8);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(7);
+
+        Mockito.when(daily_cache.get_cached_data(coords)).thenReturn(null);
+        Mockito.when(primary_api.forecast(LATITUDE, LONGITUDE)).thenReturn(forecast);
+
+        forecast_service.forecast(LATITUDE, LONGITUDE, 10);
+
+        Mockito.verify(primary_api, Mockito.times(1)).forecast(LATITUDE, LONGITUDE);
+        Mockito.verify(backup_api, Mockito.times(0)).forecast(LATITUDE, LONGITUDE);
+        Mockito.verify(daily_cache, Mockito.times(1)).get_cached_data(coords);
+    }
+
+    /**
+     * Whenever the clients asks for a number of days that
+     *  the api can give, then it should call the external api
+     *  that offers the most number of days of forecast data
+     * On this specific test we are considering that the backup
+     *  external api can offer more days, so only that one
+     *  should be called
+     */
+    @Test
+    public void use_backup_when_offers_more_days() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(7);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(8);
+
+        Mockito.when(daily_cache.get_cached_data(coords)).thenReturn(null);
+        Mockito.when(backup_api.forecast(LATITUDE, LONGITUDE)).thenReturn(forecast);
+
+        forecast_service.forecast(LATITUDE, LONGITUDE, 10);
+
+        Mockito.verify(primary_api, Mockito.times(0)).forecast(LATITUDE, LONGITUDE);
+        Mockito.verify(backup_api, Mockito.times(1)).forecast(LATITUDE, LONGITUDE);
+        Mockito.verify(daily_cache, Mockito.times(1)).get_cached_data(coords);
+    }
+
+    /**
      * If the primary api fails, use the backup one
      */
     @Test
     public void use_backup() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(7);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(8);
+
         Mockito.when(primary_api.forecast(LATITUDE, LONGITUDE)).thenThrow(RestClientException.class);
         Mockito.when(daily_cache.get_cached_data(coords)).thenReturn(null);
         Mockito.when(backup_api.forecast(LATITUDE, LONGITUDE)).thenReturn(forecast);
@@ -85,6 +134,9 @@ public class ForecastServiceTest {
      */
     @Test
     public void dont_use_backup() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(7);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(8);
+
         Mockito.when(daily_cache.get_cached_data(coords)).thenReturn(null);
         Mockito.when(primary_api.forecast(LATITUDE, LONGITUDE)).thenReturn(forecast);
 
@@ -102,6 +154,9 @@ public class ForecastServiceTest {
      */
     @Test
     public void cache_usage() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(7);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(8);
+
         Mockito.when(primary_api.forecast(LATITUDE, LONGITUDE)).thenReturn(forecast);
         Mockito.when(daily_cache.get_cached_data(coords))
             .thenReturn(null)
@@ -135,6 +190,9 @@ public class ForecastServiceTest {
      */
     @Test
     public void cache_not_enough() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(7);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(8);
+
         List<DailyForecast> forecasts_longer = new ArrayList<>();
         for (int i = 0; i < 4; i++)
             forecasts_longer.add(new DailyForecast());
@@ -173,6 +231,9 @@ public class ForecastServiceTest {
      */
     @Test
     public void only_current_not_cached() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(7);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(8);
+
         Mockito.when(primary_api.forecast(LATITUDE, LONGITUDE))
             .thenReturn(forecast)
             .thenReturn(forecast);

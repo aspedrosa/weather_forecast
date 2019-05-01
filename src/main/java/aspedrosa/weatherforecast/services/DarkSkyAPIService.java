@@ -92,7 +92,7 @@ public class DarkSkyAPIService extends ForecastAPIService {
         for (int i = 0; i < MAX_DAYS_COUNT(); i++) {
             JSONObject json_day_forecast = json_forecast.getJSONObject(i);
             DailyForecast day_forecast = new DailyForecast();
-            day_forecast.set_icon(icons.get(json_current.getString("icon")));
+            day_forecast.set_icon(icons.get(json_day_forecast.getString("icon")));
             day_forecast.set_humidity(100 * json_day_forecast.getDouble("humidity"));
             day_forecast.set_max_temperature(json_day_forecast.getDouble("temperatureMax"));
             day_forecast.set_min_temperature(json_day_forecast.getDouble("temperatureMin"));
