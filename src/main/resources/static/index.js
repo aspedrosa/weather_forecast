@@ -1,13 +1,25 @@
 let search_table_tbody = $($("#search_table").children()[1]);
 
-let empty_forecast_divs = function () {
-    $("#current_weather").empty();
-    $("#daily_forecast").empty();
+let parse_location = function() {
+    let location = $("#location_input").val();
+    location.trim().toLowerCase();
+
+    if (location === "" && location.length < 3)
+        return null;
+
+    return location;
 };
 
 $("#search_btn").click(function () {
+    let location = parse_location();
+
+    if (location === null) {
+        alert("Location invalid!");
+        return;
+    }
+
     $.get(
-        "http://localhost:8080/api/search?location=" + $("#location_input").val(),
+        "http://localhost:8080/api/search?location=" + location,
         function (data) {
             search_table_tbody.empty();
 
@@ -25,7 +37,7 @@ $("#search_btn").click(function () {
             $("#search_display").show();
         }
     ).fail(function (error) {
-        alert("Error consulting the api!");
+        alert("No search results for the given location!");
         console.log(error);
     });
 });
@@ -34,12 +46,9 @@ $("#clear_btn").click(function () {
     $("#search_display").hide();
 });
 
-$("body").on("click", "#search_go", function () {
-    let ind = $(this).val();
+let monts = ["Jan", "Mar", "Fev", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    let latitude = $(search_table_tbody.children()[ind].children[2]).text();
-    let longitude = $(search_table_tbody.children()[ind].children[3]).text();
-
+let display_data = function(location_name, latitude, longitude) {
     let days_count = $("#days_count_select").val();
 
     $.get(
@@ -48,11 +57,11 @@ $("body").on("click", "#search_go", function () {
         longitude + "&days_count=" +
         days_count,
         function (data) {
-            empty_forecast_divs();
+            $("#forecast").empty();
 
-            let card = '<div class="card text-center">' +
+            let card = '<div class="my_card">' +
                             '<h2>Current</h2>';
-            if (data.current_weather._icon != null)
+            if (data.current_weather._icon !== null)
                 card += '<img class="card-img-top" style="width:120px; height:120px; margin-left:auto; margin-right: auto" src="' + data.current_weather._icon + '">';
             card += '<div class="card-body">' +
                         '<h5 class="card-title">' + data.current_weather._summary + '</h5>' +
@@ -63,27 +72,29 @@ $("body").on("click", "#search_go", function () {
                         '<p><i class="fas fa-wind"></i> ' + data.current_weather._wind_speed.toFixed(3) + ' m/s</p>' +
                     '</div>'+
                 '</div>';
-            $("#current_weather").append(card);
+            $("#forecast").append(card);
 
             let daily_forecasts = data.daily_forecast;
-            for (let i = 0; i < daily_forecasts.length; i++) {
+            for (let i = 0, today = new Date(), last_day = today.getDate();
+                 i < daily_forecasts.length;
+                 i++, today.setDate(today.getDate() + 1)) {
                 let daily_forecast = daily_forecasts[i];
 
-                card = '<div class="card" style="text-align:center; margin: 5px">';
-                if (i == 0)
-                    card += '<h2>Today</h2>'
-                else if (i == 1)
-                    card += '<h2>Tomorrow</h2>'
-                else {
-                    let today = new Date();
-                    today.setDate(today.getDate() + i)
-                    let day = today.getDate();
-                    let month = today.getMonth();
-                    let year = today.getFullYear();
-                    card += '<h2>' + day + '/' + month + '/' + year + '</h2>'
-                }
-                if (daily_forecast._icon != null)
-                    card += '<img class="card-img-top" style="width:120px; height:120px; margin-left:auto; margin-right:auto" src="' + daily_forecast._icon + '">';
+                card = '<div class="my_card" >';
+                let day = today.getDate();
+                if (Math.abs(day - last_day) !== 1)
+                    today.setMonth(today.getMonth() + 1);
+                last_day = day;
+                let month = today.getMonth();
+
+                card += '<h2>' + day + ' ' + monts[month - 1] + '</h2>';
+
+                if (i === 0)
+                    card += '<h2>Today</h2>';
+                else if (i === 1)
+                    card += '<h2>Tomorrow</h2>';
+                if (daily_forecast._icon !== null)
+                    card += '<img class="card-img-top card_img" src="' + daily_forecast._icon + '">';
 
                 card += '<div class="card-body">' +
                             '<h5 class="card-title">' + daily_forecast._summary + '</h5>' +
@@ -94,21 +105,52 @@ $("body").on("click", "#search_go", function () {
                         '</div>'+
                     '</div>';
 
-                $("#daily_forecast").append(card);
+                $("#forecast").append(card);
             }
 
-
+            $("#location_name").html('<i class="fas fa-map-marker-alt"></i> ' + location_name);
 
             $("#forecast_display").show();
             $("#search_display").hide();
             search_table_tbody.empty();
         }
-        /*
-         *
-
-         */
     ).fail(function (error) {
         alert("Error consulting the api!");
+        console.log(error);
+    });
+};
+
+$("body").on("click", "#search_go", function () {
+    let ind = $(this).val();
+
+    let location_name = $(search_table_tbody.children()[ind].children[1]).text();
+    let latitude = $(search_table_tbody.children()[ind].children[2]).text();
+    let longitude = $(search_table_tbody.children()[ind].children[3]).text();
+
+    display_data(location_name, latitude, longitude);
+});
+
+$("#search_btn_lucky").click(function () {
+    let location = parse_location();
+
+    if (location === null) {
+        alert("Invalid location");
+        return;
+    }
+
+   $.get(
+        "http://localhost:8080/api/search?location=" + location,
+        function (data) {
+            let result = data[0];
+
+            display_data(result._display_name,
+                         result._latitude,
+                         result._longitude);
+
+            $("#location_input").val("");
+        }
+    ).fail(function (error) {
+        alert("No search results for the given location!");
         console.log(error);
     });
 });

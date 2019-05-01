@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -19,6 +21,23 @@ import java.util.List;
  */
 @Service
 public class DarkSkyAPIService extends ForecastAPIService {
+
+    private static Map<String, String> icons;
+
+    static {
+        icons = new HashMap<>();
+        icons.put("clear-day", "images/Sun.svg");
+        icons.put("clear-night", "images/Moon.svg");
+        icons.put("rain", "images/Cloud-Rain.svg");
+        icons.put("snow", "images/Cloud-Snow.svg");
+        icons.put("sleet", "images/Cloud-Hail.svg");
+        icons.put("wind", "images/Cloud-Wind.svg");
+        icons.put("fog", "images/Cloud-Fog.svg");
+        icons.put("cloudy", "images/Cloud.svg");
+        icons.put("partly-cloudy-day", "images/Cloud-Sun.svg");
+        icons.put("partly-cloudy-night", "images/Cloud-Moon.svg");
+
+    }
 
     @Autowired
     RestTemplate rest_template;
@@ -60,6 +79,7 @@ public class DarkSkyAPIService extends ForecastAPIService {
 
         JSONObject json_current = json_response.getJSONObject("currently");
         CurrentWeather current_weather = new CurrentWeather();
+        current_weather.set_icon(icons.get(json_current.getString("icon")));
         current_weather.set_humidity(100 * json_current.getDouble("humidity"));
         current_weather.set_pressure(100 * json_current.getDouble("pressure"));
         current_weather.set_summary(json_current.getString("summary"));
@@ -72,6 +92,7 @@ public class DarkSkyAPIService extends ForecastAPIService {
         for (int i = 0; i < MAX_DAYS_COUNT(); i++) {
             JSONObject json_day_forecast = json_forecast.getJSONObject(i);
             DailyForecast day_forecast = new DailyForecast();
+            day_forecast.set_icon(icons.get(json_current.getString("icon")));
             day_forecast.set_humidity(100 * json_day_forecast.getDouble("humidity"));
             day_forecast.set_max_temperature(json_day_forecast.getDouble("temperatureMax"));
             day_forecast.set_min_temperature(json_day_forecast.getDouble("temperatureMin"));
