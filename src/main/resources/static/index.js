@@ -2,7 +2,7 @@ let search_table_tbody = $($("#search_table").children()[1]);
 
 let parse_location = function() {
     let location = $("#location_input").val();
-    location.trim().toLowerCase();
+    location = location.trim().toLowerCase();
 
     if (location === "" && location.length < 3)
         return null;
