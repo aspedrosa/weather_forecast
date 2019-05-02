@@ -42,8 +42,8 @@ public class WeatherController {
      * @return HTTP response with forecast results on the data field
      */
     @GetMapping("/forecast")
-    public ResponseEntity<Forecast> forecast(@RequestParam double longitude,
-                                             @RequestParam double latitude,
+    public ResponseEntity<Forecast> forecast(@RequestParam double latitude,
+                                             @RequestParam double longitude,
                                              @RequestParam (required = false, defaultValue="1") Integer days_count) {
         Forecast forecast = forecast_service.forecast(latitude, longitude, days_count);
 
