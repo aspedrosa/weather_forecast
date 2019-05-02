@@ -59,7 +59,7 @@ let display_data = function(location_name, latitude, longitude) {
         function (data) {
             $("#forecast").empty();
 
-            let card = '<div class="my_card">' +
+            let card = '<div id="card" class="my_card">' +
                             '<h2>Current</h2>';
             if (data.current_weather._icon !== null)
                 card += '<img class="card-img-top" style="width:120px; height:120px; margin-left:auto; margin-right: auto" src="' + data.current_weather._icon + '">';
@@ -80,7 +80,7 @@ let display_data = function(location_name, latitude, longitude) {
                  i++, today.setDate(today.getDate() + 1)) {
                 let daily_forecast = daily_forecasts[i];
 
-                card = '<div class="my_card" >';
+                card = '<div id="card" class="my_card" >';
                 let day = today.getDate();
                 if (Math.abs(day - last_day) !== 1)
                     today.setMonth(today.getMonth() + 1);
