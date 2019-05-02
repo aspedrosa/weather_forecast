@@ -1,0 +1,60 @@
+\documentclass[12pt]{article}
+% Margin definition.
+\usepackage[a4paper,total={6.8in, 8.5in}]{geometry}
+\usepackage{parskip}
+\usepackage[bottom]{footmisc}
+% Images.
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage[export]{adjustbox}
+\usepackage{float}
+% Table
+\usepackage{array}
+\usepackage[toc,page]{appendix}
+% Links.
+\usepackage[T1,hyphens]{url}
+\usepackage[hidelinks, bookmarks=true]{hyperref}
+% Encoding.
+\usepackage[utf8]{inputenc}
+% Header for ua logo.
+\usepackage{fancyhdr}
+% Hedear with ua logo definition. 
+\pagestyle{fancy}
+\fancyhf{}
+\chead{
+    \includegraphics[scale=0.2]{logo_UA.png}
+}
+\setlength\headheight{45pt}
+% Footer with page number.
+\rfoot{Page \thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+% Rename table of contents title to "Index"
+\renewcommand{\contentsname}{Index \vspace{0.2cm}}
+
+\begin{document}
+
+\title{\vspace{-0.9cm}
+       \Large\raggedright\textbf{Software Quality and Tests} \\ 
+       \large\raggedright\textbf{Homework 1 : Test Development} \\ 
+       \vspace{0.5cm}
+       \normalsize
+       \raggedright\textbf{Author: \hspace{1.1cm} André Pedrosa} \\ \vspace{0.1cm}
+       \raggedright\textbf{N. Mec.: \hspace{0.92cm} 85098} \\ \vspace{0.1cm}
+       \raggedright\textbf{Date: \hspace{1.6cm} 06/05/2019} \\ \vspace{0.1cm}
+       \raggedright\textbf{Repository: \hspace{0.35cm} \url{https://github.com/aspedrosa/weather\_forecast/}} \\}
+\author{}
+\date{}
+
+\maketitle
+\thispagestyle{fancy}
+
+\vspace{-1.4cm}
+
+\tableofcontents
+
+\newpage
+
+\section{Solution}
+\section{Tests}
+
+\end{document}
