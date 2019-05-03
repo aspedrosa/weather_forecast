@@ -1,5 +1,13 @@
+// jQuery object of the tbody of the search resutls table
 let search_table_tbody = $($("#search_table").children()[1]);
 
+/**
+ * Trims and transforms into lower case the location
+ *  inserted by the user
+ *
+ * @returns {string|null} null if the location has less
+ *  then 3 characters
+ */
 let parse_location = function() {
     let location = $("#location_input").val();
     location = location.trim().toLowerCase();
@@ -10,6 +18,14 @@ let parse_location = function() {
     return location;
 };
 
+/**
+ * Whenever the search button is clicked
+ *  1. retrieve and parse the location inserted
+ *  2. retrieve search data from the api
+ *  3. clear the search table body
+ *  4. build the search table
+ *  5. display the search table
+ */
 $("#search_btn").click(function () {
     let location = parse_location();
 
@@ -42,12 +58,35 @@ $("#search_btn").click(function () {
     });
 });
 
+/**
+ * Hide the search table when the clear results button
+ *  is clicked
+ */
 $("#clear_btn").click(function () {
     $("#search_display").hide();
 });
 
+/**
+ * Abbreviation of the months of the year
+ * @type {string[]}
+ */
 let monts = ["Jan", "Mar", "Fev", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+/**
+ * Display forecast data
+ *
+ * 1. get the number of days chosen on the select
+ * 2. get forecast data from the api
+ * 3. clear the forecast div
+ * 4. build the html to display forecast data
+ * 5. update the location name
+ * 6. display forecast data
+ * 7. hide search resutls
+ *
+ * @param location_name location chosen by the user from the search table
+ * @param latitude from the search table
+ * @param longitude from the search table
+ */
 let display_data = function(location_name, latitude, longitude) {
     let days_count = $("#days_count_select").val();
 
@@ -112,7 +151,6 @@ let display_data = function(location_name, latitude, longitude) {
 
             $("#forecast_display").show();
             $("#search_display").hide();
-            search_table_tbody.empty();
         }
     ).fail(function (error) {
         alert("Error consulting the api!");
@@ -120,6 +158,14 @@ let display_data = function(location_name, latitude, longitude) {
     });
 };
 
+/**
+ * Handle the click on one of the button present
+ *  on the search results table
+ *
+ * 1. retrieve location name, latitude, longitude accordingly
+ *      which button was pressed
+ * 2. display data
+ */
 $("body").on("click", "#search_go", function () {
     let ind = $(this).val();
 
@@ -130,6 +176,14 @@ $("body").on("click", "#search_go", function () {
     display_data(location_name, latitude, longitude);
 });
 
+/**
+ * "I'm Felling Lucky" feature
+ *
+ * 1. parses the location inserted
+ * 2. retrieve data from the search api
+ * 3. display forecast data of the first
+ *      result of thesearch request
+ */
 $("#search_btn_lucky").click(function () {
     let location = parse_location();
 
