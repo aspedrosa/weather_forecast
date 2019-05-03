@@ -101,7 +101,7 @@ public class WebApp {
     @Test
     public void feel_lucky() {
 
-        Mockito.when(weather_controller.forecast(1, 1, 3)).thenReturn(generate_results(3));
+        Mockito.when(weather_controller.forecast("1", "1", "3")).thenReturn(generate_results(3));
         Mockito.when(weather_controller.search("number")).thenReturn(search_response);
 
         driver.get("http://localhost:" + port);
@@ -115,7 +115,7 @@ public class WebApp {
         assertEquals("1", driver.findElement(By.id("location_name")).getText());
         assertEquals(3 + 1, driver.findElements(By.id("card")).size());
 
-        Mockito.verify(weather_controller, Mockito.times(1)).forecast(1, 1, 3);
+        Mockito.verify(weather_controller, Mockito.times(1)).forecast("1", "1", "3");
         Mockito.verify(weather_controller, Mockito.times(1)).search("number");
     }
 
@@ -128,11 +128,11 @@ public class WebApp {
      */
     @Test
     public void simple_workflow() {
-        int forecast_data_count = 4;
+        String forecast_data_count = "4";
 
         Mockito
             .when(weather_controller.forecast(forecast_data_count, forecast_data_count, forecast_data_count))
-            .thenReturn(generate_results(forecast_data_count));
+            .thenReturn(generate_results(Integer.parseInt(forecast_data_count)));
         Mockito.when(weather_controller.search("number")).thenReturn(search_response);
 
         driver.get("http://localhost:" + port);
@@ -141,14 +141,14 @@ public class WebApp {
         driver.findElement(By.id("location_input")).sendKeys("number");
         driver.findElement(By.id("search_btn")).click();
         driver.findElement(By.id("days_count_select")).click();
-        new Select(driver.findElement(By.id("days_count_select"))).selectByVisibleText(forecast_data_count + "");
+        new Select(driver.findElement(By.id("days_count_select"))).selectByVisibleText(forecast_data_count);
         driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Days count'])[1]/following::option[4]")).click();
         driver.findElement(By.xpath("//table[@id='search_table']/tbody/tr[4]/td/button")).click();
 
         new WebDriverWait(driver, 3).until(ExpectedConditions.visibilityOf(driver.findElement(By.id("forecast"))));
 
-        assertEquals(forecast_data_count + 1, driver.findElements(By.id("card")).size());
-        assertEquals(forecast_data_count + "", driver.findElement(By.id("location_name")).getText());
+        assertEquals(Integer.parseInt(forecast_data_count) + 1, driver.findElements(By.id("card")).size());
+        assertEquals(forecast_data_count, driver.findElement(By.id("location_name")).getText());
 
         Mockito.verify(weather_controller, Mockito.times(1)).forecast(forecast_data_count,
                                                                                               forecast_data_count,
