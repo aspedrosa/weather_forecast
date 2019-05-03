@@ -17,7 +17,7 @@ import java.util.List;
  * Forecast API Service that uses the Open Weather API
  */
 @Service
-public class ApixuAPIService extends ForecastAPIService {
+public class ApixuAPIService implements ForecastAPIService {
 
     @Autowired
     RestTemplate rest_template;
