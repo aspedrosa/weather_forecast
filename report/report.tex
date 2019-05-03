@@ -42,8 +42,7 @@
        \raggedright\textbf{N. Mec.: \hspace{0.92cm} 85098} \\ \vspace{0.1cm}
        \raggedright\textbf{Date: \hspace{1.6cm} 06/05/2019} \\ \vspace{0.1cm}
        \raggedright\textbf{Repository: \hspace{0.35cm} \url{https://github.com/aspedrosa/weather\_forecast/}} \\}
-\author{}
-\date{}
+\date{} %This way the date from the maketitle command doesn't appear
 
 \maketitle
 \thispagestyle{fancy}
@@ -54,7 +53,166 @@
 
 \newpage
 
+\section{Intro}
+
+This homework consisted in developing a web project that allows to query the
+  meteorology for the next days, for a specific location, which the main goal
+  was to develop the different classes of tests (unitary, unitary with dependency isolation,
+  integration and functional) along with the development of the project.
+
+The main components of the solution are:
+\begin{itemize}
+  \item \textbf{Web page}, allowing the user to select and search for locations and also giving
+    the choice to the user to choose how many days he wants to see.
+  \item \textbf{Rest API}, that can be called by external clients allowing to query the
+    meteorology for a specific location.
+  \item \textbf{Integration with an external source}, from where the real meteorologic data will be
+    obtained, so the app built is a client of another source.
+  \item \textbf{Caching mechanism}, where stores the last retrieved results from recent calls to the
+    external sources, having also some statistics about its functioning (number of requests,
+    hits and misses)
+\end{itemize}
+
+For the website just jQuery and Bootstrap was used. To implement the server side logic a web
+  application was built using SpringBoot.
+
 \section{Solution}
+\subsection{Front End}
+
+The front end consists on a single minimalist page, where the user can do every thing
+  that the system allows on one page.
+
+At the start the user can either search from a specific location or use the "I'm Feeling Lucky"
+  feature where meteorology for the first location found on the results of the search mechanism
+  is displayed. At his time the user also can choose how much days of meteorologic data he wants
+  to see.
+
+\begin{figure}[h]
+  \center
+  \includegraphics[scale=0.35]{start_website.png}
+  \caption{How the web page is displayed at the beginning}
+\end{figure}
+
+Once the user searches for a location, a table appears with the names of related location
+  as well as the respective geographic coordinates.
+
+\begin{figure}[h]
+  \center
+  \includegraphics[scale=0.35]{after_search_website.png}
+  \caption{Search results for dodger stadium}
+\end{figure}
+
+When the user chooses a location two types of forecast data is displayed. Current and for
+  future days, being the number of days the same as the value on the "Days Count" select.
+
+\begin{figure}[h]
+  \center
+  \includegraphics[scale=0.35]{forecast_data_website.png}
+  \caption{Forecast data for Dodger Stadium, California, USA}
+\end{figure}
+
+\subsection{Back End}
+
+\begin{figure}[h]
+  \center
+  \includegraphics[scale=0.35]{solution.png}
+  \caption{Class diagram for the solution implemented}
+  \label{fig_class_diagram}
+\end{figure}
+
+As mentioned before, back end uses SpringBoot that divides the system in three layers. Controllers
+  that process HTTP requests and pass the received data to the service layer. The service layer
+  imposes the business logic. The last layers is the repositories where the service layers can store
+  data.
+
+On figure \ref{fig_class_diagram} is shown the several layers of the application as well as the
+  classes in each one. Abstraction where used to allow extensibility to the application such as
+  caching new types of data, using other external apis and using other external apis for new
+  types of data.
+
+\subsubsection{Controller}
+
+The controller layer is composed by a single controller where the REST API is
+  defined. Has three paths:
+  \begin{itemize}
+    \item api/forecast : Obtains meteorologic data of a location
+      \begin{itemize}
+        \item latitude : double : request parameter : latitude of the location
+        \item longitude : double : request parameter : longitude of the location
+        \item days\_count : int : request parameter : how much days of forecast data to retrieve
+      \end{itemize}
+    \item api/search : searches for a location. Used to obtain geographic coordinates
+      \begin{itemize}
+        \item location : String : request parameter : location to search for
+      \end{itemize}
+    %\item api/cache\_stats
+  \end{itemize}
+
+The controller is also responsible to validate to parameters received before sending them to the
+  first service layer (i.e. latitude must be a double).
+
+\subsubsection{Services}
+
+Is composed by the up layer (Service Layer 1) and the lower layer (Service Layer 2). The upper layers
+  is used by the WeatherController and its role is to check the cache for the requested data and if
+  is not there should interact with the lower layer. The role of the lower layer is to retrieve
+  meteorologic from the external api. Whenever the upper layer contacts the lower layer to
+  get data successfully, must store that received data in the cache.
+
+The upper layer is composed by two services, Search and Forecast. Both follow the flow mentioned
+  previously, however the Forecast service as a complexer logic to when query the lower layer. First
+  the Forecast service is in charge of two types of data, current and daily forecast, leading to
+  two caches with different expiration times. Secondly the Forecast service uses two services
+  of the lower layer. One used as a primary and other as backup in case the primary fails. Furthermore,
+  if the client asks for a high number of days of forecast data, the Forecast service tries to use the
+  one that offers the higher number of days of forecast data.
+
+\begin{figure}[h]
+  \center
+  \includegraphics[scale=0.5]{primary_backup_apis.png}
+  \caption{Block of code of the function retrieve\_from\_apis of the class ForecastService where
+    the choice of which api to use happens}
+\end{figure}
+
+  Third both current and daily data are retrieved on one call to an external api. So, if the
+  current data expires, both current and daily data will be stored in cache after the call
+  and overwriting of existing data may occur but because the new data is more recent, is more
+  accurate, so overwriting ends up being a good thing.
+
+\subsubsection{Repositories}
+
+The repository layer is in charge implementing caching mechanisms for the application. This is done
+  associating data to a key, in other words, a map was used. Each cached data has a time-to-live
+  after which the data stored expires and if clients asks for that data, should consider as not
+  not having that data cached.
+
+Different types of data have different strategies to see if that expired. For current meteorologic data
+  and search data is just checking, whenever its requested, if a certain time has passed since the
+  last write (30 days for search data, because location data it's pretty stable and 15 min for
+  current meteorologic data). In this cases the data associated is just removed if its considered as
+  expired. For daily forecast all data isn't removed since daily forecast data can be associated
+  with several days, witch means is a list of values each position associated with a day. So the data
+  "expires" the current date is in a different data comparing to the date on the last write (i.e. if
+  data is stored at 12/05/2019 10:00, at 12/05/2019 15:00 is still valid but at 13/05/2019 10:00 isn't).
+  When this happens the data needs to be shifted the difference of days since of last write, however if
+  the number of days that had pass is higher than the number of days stored than the data is just removed.
+
+\begin{figure}[h]
+  \center
+  \includegraphics[scale=1.5]{expiration.png}
+  \caption{Difference of cache strategies between current weather and search and daily forecast.
+    The two methods he shown are called whenever the cached is queried for data. If the
+    method has\_value\_expired returns true then the method handle\_expired\_value is called. See
+    method get\_cached\_data of class Cache}
+\end{figure}
+
 \section{Tests}
+
+\subsection{Front End}
+\subsection{Back End}
+\subsubsection{Controller}
+\subsubsection{Services}
+\subsubsection{Repositories}
+\section{Sonarqube}
 
 \end{document}
