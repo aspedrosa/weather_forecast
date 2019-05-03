@@ -208,11 +208,104 @@ Different types of data have different strategies to see if that expired. For cu
 
 \section{Tests}
 
+As said in the Intro, the main goal of this homework is to develop a project with
+  test development along. For each class unit tests where made, where they make sense.
+  If a specific class depends on another class developed mocking mechanisms, using Mockito,
+  were used so the individual class could be tested, however integration tests were also made.
+
 \subsection{Front End}
+
+Functional tests that validate the functional requirements for the application such as:
+\begin{itemize}
+  \item give an error if the user inserts an unknown location
+  \item the number of days of forecast data displayed must be the same as the number
+    of days requested
+  \item give an error if the user insert an invalid location
+  \item when the user uses the I'm Feeling Lucky feature, the forecast data should be
+    displayed, without asking to choose a location
+\end{itemize}
+
+Also an integration test is done with all three layers of the web app, controllers,
+  services and repositories, mocking the response of the external api, in other words,
+  a full stack test.
+
 \subsection{Back End}
 \subsubsection{Controller}
+
+Here is tested the responsibilities of the controllers:
+\begin{itemize}
+  \item generate the response accordingly to the response received from the service layer
+  \item validation of the parameters received
+\end{itemize}
+The unitests for controllers were done by mocking the service layers and the application
+  context is restricted to Model-View-Controller(MVC) components. Integration tests were done
+  by mocking the web context, testing the integration between the three layers (controllers,
+  services and repositories).
+
 \subsubsection{Services}
+
+For unitesting the upper layer the lower layer services and repositories are mocked allowing
+  to test:
+\begin{itemize}
+  \item ForecastService
+    \begin{itemize}
+      \item usage of the cache
+      \item query external api when one of the cache doesn't satisfies the request (i.e.
+        number of days requested is higher than the days stored or no current data
+        cached)
+      \item choice between the primary and backup api according to number of days requested
+      \item choice between the primary and backup api according to availability
+    \end{itemize}
+  \item SearchService
+    \begin{itemize}
+      \item successful responses
+      \item not found location
+    \end{itemize}
+\end{itemize}
+
+Also for the upper layers integration tests were done by mocking the response to external
+  apis allowing to test the service and repository layers.
+
+For the lower layer only unitests were made mocking the response of the external api. The
+  services that implement the interface ForecastAPIService (DarkSkyAPIService and
+  ApixuAPIService) was tested:
+  \begin{itemize}
+    \item the conversion of weather metrics to si units
+    \item number of days processed and generated had to be the same as the number of days
+      received from the external api
+  \end{itemize}
+  For the services that implement the SearchAPIService (LocationIqAPIService) was tested:
+  \begin{itemize}
+    \item handle the user inserting an unknown location leading to no results
+    \item handle receiving multiple entries with the same name from the external api
+  \end{itemize}
+
 \subsubsection{Repositories}
+
+To test the layer of repositories only units were done. Because the class SearchCache and
+  CurrentWeatherCache only change the time-to-live, these classes were not tests however
+  the abstract was tested by creating a new implementation during the tests with a low
+  time-to-live allowing to test:
+  \begin{itemize}
+    \item receiving null after time-to-live
+    \item receive data after insert
+    \item not receiving data if no inserted were made
+  \end{itemize}
+  For the first test an external library(Awaitility) was used that allows to verify a condition
+    during a certain time. If at the end of that time the condition is not met,
+    the test fails.
+
+Because the DailyForecastCache has a different ways to handle data expiration and
+  the expiration itself is different a separate test was done testing:
+  \begin{itemize}
+    \item expiration data is correctly handled
+    \item data expires on the correct time
+    \item the action of overriding data is done correctly
+  \end{itemize}
+  To test the expiration of the data an external library (joda-time) was used to allow
+    control of what time returns a specific function on this library, if it is a
+    fixed time for testing, or the system time for production.
+
 \section{Sonarqube}
 
 \end{document}
