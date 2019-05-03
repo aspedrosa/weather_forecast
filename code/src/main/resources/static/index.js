@@ -4,7 +4,7 @@ let parse_location = function() {
     let location = $("#location_input").val();
     location = location.trim().toLowerCase();
 
-    if (location === "" && location.length < 3)
+    if (location.length < 3)
         return null;
 
     return location;
@@ -14,7 +14,7 @@ $("#search_btn").click(function () {
     let location = parse_location();
 
     if (location === null) {
-        alert("Location invalid!");
+        alert("Invalid location!");
         return;
     }
 
@@ -134,7 +134,7 @@ $("#search_btn_lucky").click(function () {
     let location = parse_location();
 
     if (location === null) {
-        alert("Invalid location");
+        alert("Invalid location!");
         return;
     }
 

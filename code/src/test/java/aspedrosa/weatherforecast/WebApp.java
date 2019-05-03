@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -182,6 +183,33 @@ public class WebApp {
 
         assertEquals("No search results for the given location!", alert.getText());
     }
+
+    /**
+     * Test if alerts pop up if the user searches for locations
+     *  with less than 3 characters
+     */
+    @Test
+    public void alert_on_invalid() {
+        driver.get("http://localhost:8080/");
+        driver.findElement(By.id("location_input")).click();
+        driver.findElement(By.id("location_input")).clear();
+
+        try {
+            driver.findElement(By.id("search_btn")).click();
+            Alert alert = driver.switchTo().alert();
+            assertEquals("Invalid location!", alert.getText());
+            alert.accept(); // close opened alert
+
+            driver.findElement(By.id("location_input")).sendKeys("      a");
+            driver.findElement(By.id("search_btn_lucky")).click();
+            alert = driver.switchTo().alert();
+            assertEquals("Invalid location!", alert.getText());
+            alert.dismiss(); // close opened alert
+        } catch (NoAlertPresentException e) {
+            fail("Alert not present!");
+        }
+    }
+
 
     @AfterClass
     public static void tearDown() {
