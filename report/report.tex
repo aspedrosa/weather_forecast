@@ -57,8 +57,8 @@
 
 This homework consisted in developing a web project that allows to query the
   meteorology for the next days, for a specific location, which the main goal
-  was to develop the different classes of tests (unitary, unitary with dependency isolation,
-  integration and functional) along with the development of the project.
+  was to develop the different classes of tests (unitary, integration and functional)
+  along with the development of the project.
 
 The main components of the solution are:
 \begin{itemize}
@@ -209,13 +209,12 @@ Different types of data have different strategies to see if that expired. For cu
 \section{Tests}
 
 As said in the Intro, the main goal of this homework is to develop a project with
-  test development along. For each class unit tests where made, where they make sense.
-  If a specific class depends on another class developed mocking mechanisms, using Mockito,
-  were used so the individual class could be tested, however integration tests were also made.
+  test development along. On this section it is explained what tests were made
+  and how they were made.
 
 \subsection{Front End}
 
-Functional tests that validate the functional requirements for the application such as:
+Here Functional tests were made that validate the functional requirements for the application such as:
 \begin{itemize}
   \item give an error if the user inserts an unknown location
   \item the number of days of forecast data displayed must be the same as the number
@@ -225,9 +224,8 @@ Functional tests that validate the functional requirements for the application s
     displayed, without asking to choose a location
 \end{itemize}
 
-Also an integration test is done with all three layers of the web app, controllers,
-  services and repositories, mocking the response of the external api, in other words,
-  a full stack test.
+Because this the web page uses the api developed, its response to the web page
+  was mocked with deterministic responses using Mockito.
 
 \subsection{Back End}
 \subsubsection{Controller}
@@ -237,14 +235,12 @@ Here is tested the responsibilities of the controllers:
   \item generate the response accordingly to the response received from the service layer
   \item validation of the parameters received
 \end{itemize}
-The unitests for controllers were done by mocking the service layers and the application
-  context is restricted to Model-View-Controller(MVC) components. Integration tests were done
-  by mocking the web context, testing the integration between the three layers (controllers,
-  services and repositories).
+The integration tests for controllers were done by mocking the service layers and the application
+  context is restricted to Model-View-Controller(MVC) components.
 
 \subsubsection{Services}
 
-For unitesting the upper layer the lower layer services and repositories are mocked allowing
+For integration tests of the upper layer the lower layer services and repositories were mocked allowing
   to test:
 \begin{itemize}
   \item ForecastService
@@ -263,18 +259,15 @@ For unitesting the upper layer the lower layer services and repositories are moc
     \end{itemize}
 \end{itemize}
 
-Also for the upper layers integration tests were done by mocking the response to external
-  apis allowing to test the service and repository layers.
-
-For the lower layer only unitests were made mocking the response of the external api. The
+For the lower layer only unitests were made mocking the response of the external api. For the
   services that implement the interface ForecastAPIService (DarkSkyAPIService and
-  ApixuAPIService) was tested:
+  ApixuAPIService) it was tested:
   \begin{itemize}
     \item the conversion of weather metrics to si units
     \item number of days processed and generated had to be the same as the number of days
       received from the external api
   \end{itemize}
-  For the services that implement the SearchAPIService (LocationIqAPIService) was tested:
+  For the services that implement the SearchAPIService (LocationIqAPIService) it was tested:
   \begin{itemize}
     \item handle the user inserting an unknown location leading to no results
     \item handle receiving multiple entries with the same name from the external api
@@ -284,7 +277,7 @@ For the lower layer only unitests were made mocking the response of the external
 
 To test the layer of repositories only units were done. Because the class SearchCache and
   CurrentWeatherCache only change the time-to-live, these classes were not tests however
-  the abstract was tested by creating a new implementation during the tests with a low
+  the super class abstract was tested by creating a new implementation during the tests with a low
   time-to-live allowing to test:
   \begin{itemize}
     \item receiving null after time-to-live
@@ -295,16 +288,16 @@ To test the layer of repositories only units were done. Because the class Search
     during a certain time. If at the end of that time the condition is not met,
     the test fails.
 
-Because the DailyForecastCache has a different ways to handle data expiration and
-  the expiration itself is different a separate test was done testing:
+Because the DailyForecastCache has different ways to handle data expiration and
+  the expiration itself is different separate tests were done testing:
   \begin{itemize}
     \item expiration data is correctly handled
     \item data expires on the correct time
     \item the action of overriding data is done correctly
   \end{itemize}
   To test the expiration of the data an external library (joda-time) was used to allow
-    control of what time returns a specific function on this library, if it is a
-    fixed time for testing, or the system time for production.
+    control of what time returns a specific function on this library, allowing to return a
+    fixed time for testing and the system time for production.
 
 \section{Sonarqube}
 
