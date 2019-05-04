@@ -8,6 +8,10 @@ import org.awaitility.Awaitility;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test defaults methods of the abstract
+ *  class Cache by building a simple implementation
+ */
 public class CacheTest {
 
     class CacheImpl extends Cache<String, Object>{
@@ -73,5 +77,47 @@ public class CacheTest {
     @Test
     public void null_for_no_data() {
         assertNull(cache.get_cached_data("key"));
+    }
+
+    /**
+     * Test default implementation
+     *  of the method update_value.
+     * Should overwrite data and update write_time
+     */
+    @Test
+    public void update_value() {
+        cache.cache_data("key", "value");
+
+        long then = System.currentTimeMillis();
+
+        Awaitility.await().atMost(Duration.FIVE_SECONDS).until(
+            () -> System.currentTimeMillis() > then
+        );
+
+        cache.update_value(cache.data.get("key"), 1);
+
+        assertEquals(1, cache.get_cached_data("key"));
+        assertTrue(then < cache.data.get("key").write_date);
+    }
+
+    /**
+     * When the method to store data is called (cache_data)
+     *  on a given key and that key already exists on cache then
+     *  should override the value and update the write_date
+     */
+    @Test
+    public void cached_data_override() {
+        cache.cache_data("key", "value");
+
+        long then = System.currentTimeMillis();
+
+        Awaitility.await().atMost(Duration.FIVE_SECONDS).until(
+            () -> System.currentTimeMillis() > then
+        );
+
+        cache.cache_data("key", 1);
+
+        assertEquals(1, cache.get_cached_data("key"));
+        assertTrue(then < cache.data.get("key").write_date);
     }
 }

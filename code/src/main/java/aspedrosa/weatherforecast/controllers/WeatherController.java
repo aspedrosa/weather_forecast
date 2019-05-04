@@ -35,6 +35,18 @@ public class WeatherController {
     SearchService search_service;
 
     /**
+     * Parameters received that need to be converted to double
+     *  must match this pattern
+     */
+    private final String double_pattern = "-?\\d*(\\.\\d+)?";
+
+    /**
+     * Parameters received that need to be converted to integer
+     *  must match this pattern
+     */
+    private final String integer_pattern = "\\d+";
+
+    /**
      * Gives the weather results for certain coordinates within a time (daily) interval
      *
      * @param longitude of the location
@@ -42,10 +54,22 @@ public class WeatherController {
      * @return HTTP response with forecast results on the data field
      */
     @GetMapping("/forecast")
-    public ResponseEntity<Forecast> forecast(@RequestParam double latitude,
-                                             @RequestParam double longitude,
-                                             @RequestParam (required = false, defaultValue="1") Integer days_count) {
-        Forecast forecast = forecast_service.forecast(latitude, longitude, days_count);
+    public ResponseEntity forecast(@RequestParam String latitude,
+                                   @RequestParam String longitude,
+                                   @RequestParam (required = false, defaultValue="1") String days_count) {
+
+        if (!latitude.matches(double_pattern) || !longitude.matches(double_pattern) || !days_count.matches(integer_pattern)) {
+            return new ResponseEntity<>(
+                "Bad number format for parameters",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        Forecast forecast = forecast_service.forecast(
+            Double.parseDouble(latitude),
+            Double.parseDouble(longitude),
+            Integer.parseInt(days_count)
+        );
 
         return new ResponseEntity<>(
             forecast,

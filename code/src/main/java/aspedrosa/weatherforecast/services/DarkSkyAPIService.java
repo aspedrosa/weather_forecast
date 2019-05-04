@@ -20,7 +20,7 @@ import java.util.Map;
  * Forecast api Service that uses Dark Sky API
  */
 @Service
-public class DarkSkyAPIService extends ForecastAPIService {
+public class DarkSkyAPIService implements ForecastAPIService {
 
     private static Map<String, String> icons;
 

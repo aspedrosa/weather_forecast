@@ -78,6 +78,7 @@ public class DailyForecastCache extends Cache<Coordinates, List<DailyForecast>> 
             forecast.set(i, forecast.get(i + diff_days));
 
         data.get(key).data = forecast.subList(0, forecast.size() - diff_days);
+        data.get(key).write_date = DateTimeUtils.currentTimeMillis();
 
         return true;
     }

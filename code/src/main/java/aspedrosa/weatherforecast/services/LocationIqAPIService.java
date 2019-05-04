@@ -18,7 +18,7 @@ import java.util.Map;
  * Search api service that uses the LocationIQ API
  */
 @Service
-public class LocationIqAPIService extends SearchAPIService {
+public class LocationIqAPIService implements SearchAPIService {
 
     @Autowired
     RestTemplate rest_template;

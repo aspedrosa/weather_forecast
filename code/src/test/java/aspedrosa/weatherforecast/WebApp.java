@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -101,7 +102,7 @@ public class WebApp {
     @Test
     public void feel_lucky() {
 
-        Mockito.when(weather_controller.forecast(1, 1, 3)).thenReturn(generate_results(3));
+        Mockito.when(weather_controller.forecast("1", "1", "3")).thenReturn(generate_results(3));
         Mockito.when(weather_controller.search("number")).thenReturn(search_response);
 
         driver.get("http://localhost:" + port);
@@ -115,7 +116,7 @@ public class WebApp {
         assertEquals("1", driver.findElement(By.id("location_name")).getText());
         assertEquals(3 + 1, driver.findElements(By.id("card")).size());
 
-        Mockito.verify(weather_controller, Mockito.times(1)).forecast(1, 1, 3);
+        Mockito.verify(weather_controller, Mockito.times(1)).forecast("1", "1", "3");
         Mockito.verify(weather_controller, Mockito.times(1)).search("number");
     }
 
@@ -128,11 +129,11 @@ public class WebApp {
      */
     @Test
     public void simple_workflow() {
-        int forecast_data_count = 4;
+        String forecast_data_count = "4";
 
         Mockito
             .when(weather_controller.forecast(forecast_data_count, forecast_data_count, forecast_data_count))
-            .thenReturn(generate_results(forecast_data_count));
+            .thenReturn(generate_results(Integer.parseInt(forecast_data_count)));
         Mockito.when(weather_controller.search("number")).thenReturn(search_response);
 
         driver.get("http://localhost:" + port);
@@ -141,14 +142,14 @@ public class WebApp {
         driver.findElement(By.id("location_input")).sendKeys("number");
         driver.findElement(By.id("search_btn")).click();
         driver.findElement(By.id("days_count_select")).click();
-        new Select(driver.findElement(By.id("days_count_select"))).selectByVisibleText(forecast_data_count + "");
+        new Select(driver.findElement(By.id("days_count_select"))).selectByVisibleText(forecast_data_count);
         driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Days count'])[1]/following::option[4]")).click();
         driver.findElement(By.xpath("//table[@id='search_table']/tbody/tr[4]/td/button")).click();
 
         new WebDriverWait(driver, 3).until(ExpectedConditions.visibilityOf(driver.findElement(By.id("forecast"))));
 
-        assertEquals(forecast_data_count + 1, driver.findElements(By.id("card")).size());
-        assertEquals(forecast_data_count + "", driver.findElement(By.id("location_name")).getText());
+        assertEquals(Integer.parseInt(forecast_data_count) + 1, driver.findElements(By.id("card")).size());
+        assertEquals(forecast_data_count, driver.findElement(By.id("location_name")).getText());
 
         Mockito.verify(weather_controller, Mockito.times(1)).forecast(forecast_data_count,
                                                                                               forecast_data_count,
@@ -170,7 +171,7 @@ public class WebApp {
                 HttpStatus.NOT_FOUND
             ));
 
-        driver.get("http://localhost:8080/");
+        driver.get("http://localhost:" + port);
         driver.findElement(By.id("location_input")).click();
         driver.findElement(By.id("location_input")).clear();
         driver.findElement(By.id("location_input")).sendKeys("aaskldjhlfrg");
@@ -181,6 +182,32 @@ public class WebApp {
         Alert alert = driver.switchTo().alert();
 
         assertEquals("No search results for the given location!", alert.getText());
+    }
+
+    /**
+     * Test if alerts pop up if the user searches for locations
+     *  with less than 3 characters
+     */
+    @Test
+    public void alert_on_invalid() {
+        driver.get("http://localhost:" + port);
+        driver.findElement(By.id("location_input")).click();
+        driver.findElement(By.id("location_input")).clear();
+
+        try {
+            driver.findElement(By.id("search_btn")).click();
+            Alert alert = driver.switchTo().alert();
+            assertEquals("Invalid location!", alert.getText());
+            alert.accept(); // close opened alert
+
+            driver.findElement(By.id("location_input")).sendKeys("      a");
+            driver.findElement(By.id("search_btn_lucky")).click();
+            alert = driver.switchTo().alert();
+            assertEquals("Invalid location!", alert.getText());
+            alert.dismiss(); // close opened alert
+        } catch (NoAlertPresentException e) {
+            fail("Alert not present!");
+        }
     }
 
     @AfterClass

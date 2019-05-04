@@ -173,11 +173,11 @@ public abstract class Cache<K,V> {
 
         Value val = data.get(key);
 
-        if (has_value_expired(val.write_date))
-            if (!handle_expired_value(key)) { //if it did not handle (just removed it) then consider a miss
-                miss();
-                return null;
-            }
+        //if it did not handle (just removed it) then consider a miss
+        if (has_value_expired(val.write_date) && !handle_expired_value(key)) {
+            miss();
+            return null;
+        }
 
         hit();
         return val.data;
