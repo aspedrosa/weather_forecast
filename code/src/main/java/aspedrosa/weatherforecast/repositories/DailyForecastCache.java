@@ -54,8 +54,8 @@ public class DailyForecastCache extends Cache<Coordinates, List<DailyForecast>> 
      */
     @Override
     protected boolean handle_expired_value(Coordinates key) {
-        long write_date = data.get(key).write_date;
-        List<DailyForecast> daily_forecasts = data.get(key).data;
+        long write_date = data.get(key).get_write_date();
+        List<DailyForecast> daily_forecasts = data.get(key).get_data();
 
         DateValues then = get_date_values(write_date);
         DateValues now = get_date_values(DateTimeUtils.currentTimeMillis());
@@ -72,13 +72,13 @@ public class DailyForecastCache extends Cache<Coordinates, List<DailyForecast>> 
         // else shift data on the array accordingly to how much days
         //  passed since last write
         int diff_days = now.get_day() - then.get_day();
-        List<DailyForecast> forecast = data.get(key).data;
+        List<DailyForecast> forecast = data.get(key).get_data();
 
         for (int i = 0; i < forecast.size() - diff_days; i++)
             forecast.set(i, forecast.get(i + diff_days));
 
-        data.get(key).data = forecast.subList(0, forecast.size() - diff_days);
-        data.get(key).write_date = DateTimeUtils.currentTimeMillis();
+        data.get(key).set_data(forecast.subList(0, forecast.size() - diff_days));
+        data.get(key).set_write_date(DateTimeUtils.currentTimeMillis());
 
         return true;
     }

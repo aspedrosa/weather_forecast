@@ -40,11 +40,11 @@ public abstract class Cache<K,V> {
         /**
          * Unix timestamp when this value was written
          */
-        public long write_date;
+        protected long write_date;
         /**
          * Cached data
          */
-        public V data;
+        protected V data;
 
         /**
          * Main constructor
@@ -53,6 +53,22 @@ public abstract class Cache<K,V> {
         public Value(V data) {
             this.data = data;
             this.write_date = DateTimeUtils.currentTimeMillis();
+        }
+
+        public long get_write_date() {
+            return write_date;
+        }
+
+        public void set_write_date(long write_date) {
+            this.write_date = write_date;
+        }
+
+        public V get_data() {
+            return data;
+        }
+
+        public void set_data(V data) {
+            this.data = data;
         }
     }
 

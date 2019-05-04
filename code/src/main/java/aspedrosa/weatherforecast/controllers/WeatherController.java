@@ -38,13 +38,13 @@ public class WeatherController {
      * Parameters received that need to be converted to double
      *  must match this pattern
      */
-    private final String double_pattern = "-?\\d*(\\.\\d+)?";
+    private static final String double_pattern = "-?\\d*(\\.\\d+)?";
 
     /**
      * Parameters received that need to be converted to integer
      *  must match this pattern
      */
-    private final String integer_pattern = "\\d+";
+    private static final String integer_pattern = "\\d+";
 
     /**
      * Gives the weather results for certain coordinates within a time (daily) interval

@@ -56,9 +56,10 @@ public class ApixuAPIService implements ForecastAPIService {
         JSONObject json_current = json_response.getJSONObject("current");
         CurrentWeather current_weather = new CurrentWeather();
         current_weather.set_humidity(json_current.getInt("humidity"));
-        current_weather.set_icon("http:" + json_current.getJSONObject("condition").getString("icon"));
+        JSONObject condition = json_current.getJSONObject("condition");
+        current_weather.set_icon("http:" + condition.getString("icon"));
+        current_weather.set_summary(condition.getString("text"));
         current_weather.set_pressure(100 * json_current.getDouble("pressure_mb"));
-        current_weather.set_summary(json_current.getJSONObject("condition").getString("text"));
         current_weather.set_temperature(json_current.getDouble("temp_c"));
         current_weather.set_uv(json_current.getDouble("uv"));
         current_weather.set_wind_speed(((double) 5 / (double) 18) * json_current.getDouble("wind_kph"));
@@ -69,10 +70,11 @@ public class ApixuAPIService implements ForecastAPIService {
             JSONObject json_day_forecast = json_forecast.getJSONObject(i).getJSONObject("day");
             DailyForecast day_forecast = new DailyForecast();
             day_forecast.set_humidity(json_day_forecast.getInt("avghumidity"));
-            day_forecast.set_icon("http:" + json_day_forecast.getJSONObject("condition").getString("icon"));
+            condition = json_current.getJSONObject("condition");
+            day_forecast.set_icon("http:" + condition.getString("icon"));
+            day_forecast.set_summary(condition.getString("text"));
             day_forecast.set_max_temperature(json_day_forecast.getDouble("maxtemp_c"));
             day_forecast.set_min_temperature(json_day_forecast.getDouble("mintemp_c"));
-            day_forecast.set_summary(json_day_forecast.getJSONObject("condition").getString("text"));
             day_forecast.set_uv(json_day_forecast.getDouble("uv"));
 
             daily_forecast.add(day_forecast);
