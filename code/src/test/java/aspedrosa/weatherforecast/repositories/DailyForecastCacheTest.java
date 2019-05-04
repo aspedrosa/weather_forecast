@@ -63,11 +63,14 @@ public class DailyForecastCacheTest {
     /**
      * Test if whenever x values are stored and y days had pass, x > y,
      *  that x - y values are removed
+     * And write date is updated
      */
     @Test
     public void handle_expired_value_true() {
+        long then = 1556495400000L; // 28/04/2019 @ 11:50pm (UTC)
+
         daily_cache.cache_data(coords, values);
-        daily_cache.data.get(coords).write_date = 1556495400000L; // 28/04/2019 @ 11:50pm (UTC)
+        daily_cache.data.get(coords).write_date = then;
 
         assertTrue(daily_cache.handle_expired_value(coords));
 
@@ -76,6 +79,8 @@ public class DailyForecastCacheTest {
         String[] summaries = {"b", "c", "d"};
         for (int i = 0; i < 3; i++)
             assertEquals(summaries[i], after_handle.get(i).get_summary());
+
+        assertTrue(daily_cache.data.get(coords).write_date > then);
     }
 
     /**

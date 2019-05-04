@@ -182,6 +182,40 @@ public class ForecastServiceTest {
     }
 
     /**
+     * Whenever the user asks for a number of days higher than the maximum
+     *  number of days that the apis can offer and the maximum number of
+     *  days is already cached don't retrieve data from the apis
+     */
+    @Test
+    public void more_days_than_offer() {
+        Mockito.when(primary_api.MAX_DAYS_COUNT()).thenReturn(2);
+        Mockito.when(backup_api.MAX_DAYS_COUNT()).thenReturn(1);
+
+        Mockito.when(primary_api.forecast(LATITUDE, LONGITUDE)).thenReturn(forecast);
+        Mockito.when(daily_cache.get_cached_data(coords))
+            .thenReturn(null)
+            .thenReturn(daily_forecasts);
+        Mockito.when(current_cache.get_cached_data(coords))
+            .thenReturn(current_weather);
+
+        forecast_service.forecast(LATITUDE, LONGITUDE, 2);
+        forecast_service.forecast(LATITUDE, LONGITUDE, 4);
+
+        Mockito.verify(primary_api, Mockito.times(1))
+            .forecast(LATITUDE, LONGITUDE);
+
+        Mockito.verify(daily_cache, Mockito.times(2))
+            .get_cached_data(coords);
+        Mockito.verify(daily_cache, Mockito.times(1))
+            .cache_data(coords, daily_forecasts);
+
+        Mockito.verify(current_cache, Mockito.times(1))
+            .get_cached_data(coords);
+        Mockito.verify(current_cache, Mockito.times(1))
+            .cache_data(coords, current_weather);
+    }
+
+    /**
      * Two consecutive queries to the cache should lead
      *  to the usage of cache on the second, whoever if on the
      *  second query a higher number of days is requested, cache

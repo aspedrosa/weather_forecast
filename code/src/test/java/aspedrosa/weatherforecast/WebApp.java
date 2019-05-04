@@ -171,7 +171,7 @@ public class WebApp {
                 HttpStatus.NOT_FOUND
             ));
 
-        driver.get("http://localhost:8080/");
+        driver.get("http://localhost:" + port);
         driver.findElement(By.id("location_input")).click();
         driver.findElement(By.id("location_input")).clear();
         driver.findElement(By.id("location_input")).sendKeys("aaskldjhlfrg");
@@ -190,7 +190,7 @@ public class WebApp {
      */
     @Test
     public void alert_on_invalid() {
-        driver.get("http://localhost:8080/");
+        driver.get("http://localhost:" + port);
         driver.findElement(By.id("location_input")).click();
         driver.findElement(By.id("location_input")).clear();
 
@@ -209,7 +209,6 @@ public class WebApp {
             fail("Alert not present!");
         }
     }
-
 
     @AfterClass
     public static void tearDown() {
